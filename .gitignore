@@ -484,3 +484,8 @@ $RECYCLE.BIN/
 # власні винятки проєкту
 *.user
 data/*.local.json
+
+# macOS and local runtime directories
+Library/
+.local/
+**/.local/
