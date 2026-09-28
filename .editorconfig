@@ -48,6 +48,8 @@ dotnet_diagnostic.SA0001.severity = none
 dotnet_diagnostic.SA1600.severity = none
 dotnet_diagnostic.SA1601.severity = none
 dotnet_diagnostic.SA1602.severity = none
+dotnet_diagnostic.SA1611.severity = none
+dotnet_diagnostic.SA1615.severity = none
 # кома в кінці багаторядкового ініціалізатора необов’язкова
 dotnet_diagnostic.SA1413.severity = none
 
