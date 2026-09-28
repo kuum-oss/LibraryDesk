@@ -5,14 +5,19 @@ public sealed class Loan
 {
     private readonly List<LoanItem> _items = new();
 
+    /// <summary>Унікальний ідентифікатор видачі.</summary>
     public int Id { get; init; }
 
+    /// <summary>Ідентифікатор читача.</summary>
     public int ReaderId { get; init; }
 
+    /// <summary>Поточний статус видачі.</summary>
     public LoanStatus Status { get; set; } = LoanStatus.Active;
 
+    /// <summary>Дата та час видачі.</summary>
     public DateTimeOffset IssuedAt { get; init; }
 
+    /// <summary>Список позицій у формулярі видачі.</summary>
     public IReadOnlyList<LoanItem> Items => _items;
 
     /// <summary>Додає позицію до видачі.</summary>
