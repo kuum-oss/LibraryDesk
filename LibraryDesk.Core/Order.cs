@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace LibraryDesk.Core;
 
@@ -9,9 +8,46 @@ namespace LibraryDesk.Core;
 /// </summary>
 public class Order
 {
-    private readonly List<string[]> _lines = new();
+    /// <summary>Ставка податку на додану вартість.</summary>
+    private const decimal VatRate = 0.2m;
 
-    // public string prim; // примітка, поки не треба
+    /// <summary>Поріг суми для знижки постійному покупцю.</summary>
+    private const decimal RegularDiscountThreshold = 1000m;
+
+    /// <summary>Частка знижки постійному покупцю.</summary>
+    private const decimal RegularDiscountRate = 0.10m;
+
+    /// <summary>Поріг суми для знижки на велике замовлення.</summary>
+    private const decimal LargeOrderThreshold = 5000m;
+
+    /// <summary>Частка знижки на велике замовлення.</summary>
+    private const decimal LargeOrderDiscountRate = 0.15m;
+
+    /// <summary>Кількість рядків, з якої діє гуртова знижка.</summary>
+    private const int BulkLineCount = 10;
+
+    /// <summary>Сума гуртової знижки, грн.</summary>
+    private const decimal BulkDiscountAmount = 100m;
+
+    /// <summary>Максимально допустима кількість рядків у замовленні.</summary>
+    private const int MaxLineCount = 100;
+
+    /// <summary>Мінімальна довжина імені замовника.</summary>
+    private const int MinCustomerNameLength = 3;
+
+    /// <summary>Стан: новий.</summary>
+    private const int StatusNew = 0;
+
+    /// <summary>Стан: оплачено.</summary>
+    private const int StatusPaid = 1;
+
+    /// <summary>Стан: відправлено.</summary>
+    private const int StatusShipped = 2;
+
+    /// <summary>Стан: скасовано.</summary>
+    private const int StatusCancelled = 3;
+
+    private readonly List<string[]> _lines = new();
 
     /// <summary>
     /// Ініціалізує новий екземпляр класу <see cref="Order"/>.
@@ -38,7 +74,7 @@ public class Order
     /// <summary>
     /// Отримує поточний числовий стан замовлення.
     /// </summary>
-    public int Status { get; private set; } = 0;
+    public int Status { get; private set; } = StatusNew;
 
     /// <summary>
     /// Отримує дату і час створення замовлення.
@@ -74,27 +110,22 @@ public class Order
         {
             int quantity = int.Parse(_lines[i][1]);
             decimal unitPrice = decimal.Parse(_lines[i][2]);
-            total = total + (quantity * unitPrice);
-            lineCount = lineCount + 1;
+            total += quantity * unitPrice;
+            lineCount++;
         }
 
-        // if (sum1 > 500) { sum1 = sum1 - 50; } // стара знижка
-        if (isRegularCustomer == true && total > 1000)
+        if (isRegularCustomer && total > RegularDiscountThreshold)
         {
-            total = total * 0.9m;
+            total *= 1m - RegularDiscountRate;
         }
-        else if (total > 5000)
+        else if (total > LargeOrderThreshold)
         {
-            total = total * 0.85m;
-        }
-        else
-        {
-            total = total;
+            total *= 1m - LargeOrderDiscountRate;
         }
 
-        if (lineCount > 10)
+        if (lineCount > BulkLineCount)
         {
-            total = total - 100;
+            total -= BulkDiscountAmount;
         }
 
         if (total < 0)
@@ -102,8 +133,8 @@ public class Order
             total = 0;
         }
 
-        // Ставка ПДВ 20% нараховується на суму після знижок
-        total = total + (total * 0.2m);
+        // ПДВ нараховується на суму вже після всіх знижок
+        total += total * VatRate;
         return Math.Round(total, 2);
     }
 
@@ -114,21 +145,21 @@ public class Order
     /// <returns>true, якщо перехід виконано; false, якщо перехід заборонений.</returns>
     public bool TryChangeStatus(int newStatus)
     {
-        if (Status == 0 && newStatus == 1)
+        if (Status == StatusNew && newStatus == StatusPaid)
         {
-            Status = 1;
+            Status = StatusPaid;
             return true;
         }
 
-        if (Status == 1 && newStatus == 2)
+        if (Status == StatusPaid && newStatus == StatusShipped)
         {
-            Status = 2;
+            Status = StatusShipped;
             return true;
         }
 
-        if (Status == 0 && newStatus == 3)
+        if (Status == StatusNew && newStatus == StatusCancelled)
         {
-            Status = 3;
+            Status = StatusCancelled;
             return true;
         }
 
@@ -142,20 +173,18 @@ public class Order
     public bool IsValid()
     {
         if (Id != null
-            && Id != ""
+            && Id.Length > 0
             && CustomerName != null
-            && CustomerName.Length > 2
+            && CustomerName.Length >= MinCustomerNameLength
             && _lines.Count > 0
-            && _lines.Count < 100
-            && Status >= 0
-            && Status <= 3)
+            && _lines.Count < MaxLineCount
+            && Status >= StatusNew
+            && Status <= StatusCancelled)
         {
             return true;
         }
-        else
-        {
-            return false;
-        }
+
+        return false;
     }
 
     /// <summary>
@@ -164,7 +193,7 @@ public class Order
     /// <returns>Текстовий звіт із деталізацією позицій та загальною сумою.</returns>
     public string BuildReport()
     {
-        string reportText = "";
+        string reportText = string.Empty;
         for (int i = 0; i < _lines.Count; i++)
         {
             reportText = reportText
