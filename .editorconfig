@@ -1,0 +1,35 @@
+root = true
+
+[*]
+charset = utf-8
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 4
+
+[*.{csproj,props,targets,json,yml}]
+indent_size = 2
+
+[*.cs]
+max_line_length = 100
+
+# форматування у стилі Allman
+csharp_new_line_before_open_brace = all
+csharp_new_line_before_else = true
+csharp_new_line_before_catch = true
+csharp_prefer_braces = true:warning
+csharp_indent_case_contents = true
+dotnet_sort_system_directives_first = true
+
+# сучасний синтаксис C#
+csharp_style_namespace_declarations = file_scoped:warning
+csharp_style_var_for_built_in_types = false:suggestion
+
+# іменування: приватні поля з підкресленням
+dotnet_naming_rule.priv_underscore.symbols = priv_field
+dotnet_naming_rule.priv_underscore.style = underscore_camel
+dotnet_naming_rule.priv_underscore.severity = warning
+dotnet_naming_symbols.priv_field.applicable_kinds = field
+dotnet_naming_symbols.priv_field.applicable_accessibilities = private
+dotnet_naming_style.underscore_camel.capitalization = camel_case
+dotnet_naming_style.underscore_camel.required_prefix = _
