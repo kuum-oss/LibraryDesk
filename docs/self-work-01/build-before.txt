@@ -1,0 +1,2 @@
+Навмисне порушення: private List<LoanItem> items = new();
+error IDE1006: Naming rule violation: These words must begin with an underscore

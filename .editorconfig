@@ -17,18 +17,31 @@ max_line_length = 100
 csharp_new_line_before_open_brace = all
 csharp_new_line_before_else = true
 csharp_new_line_before_catch = true
-csharp_prefer_braces = true:warning
+csharp_prefer_braces = true:error
 csharp_indent_case_contents = true
 dotnet_sort_system_directives_first = true
 
 # сучасний синтаксис C#
 csharp_style_namespace_declarations = file_scoped:warning
 csharp_style_var_for_built_in_types = false:suggestion
+csharp_style_prefer_switch_expression = true:suggestion
+dotnet_diagnostic.IDE0055.severity = error
+dotnet_diagnostic.IDE0161.severity = warning
+dotnet_diagnostic.IDE1006.severity = error
 
-# іменування: приватні поля з підкресленням
+# іменування: константи — PascalCase (обробляється першим, має пріоритет)
+dotnet_naming_rule.const_pascal.symbols = const_fields
+dotnet_naming_rule.const_pascal.style = pascal_case_style
+dotnet_naming_rule.const_pascal.severity = warning
+dotnet_naming_symbols.const_fields.applicable_kinds = field
+dotnet_naming_symbols.const_fields.applicable_accessibilities = *
+dotnet_naming_symbols.const_fields.required_modifiers = const
+dotnet_naming_style.pascal_case_style.capitalization = pascal_case
+
+# іменування: приватні поля (не константи) — _camelCase
 dotnet_naming_rule.priv_underscore.symbols = priv_field
 dotnet_naming_rule.priv_underscore.style = underscore_camel
-dotnet_naming_rule.priv_underscore.severity = suggestion
+dotnet_naming_rule.priv_underscore.severity = error
 dotnet_naming_symbols.priv_field.applicable_kinds = field
 dotnet_naming_symbols.priv_field.applicable_accessibilities = private
 dotnet_naming_style.underscore_camel.capitalization = camel_case
@@ -43,20 +56,20 @@ dotnet_diagnostic.SA1101.severity = none
 dotnet_diagnostic.SA1200.severity = none
 # приватні поля іменуємо з _, як прийнято в .NET
 dotnet_diagnostic.SA1309.severity = none
-# XML-документацію вимагатимемо з ЛР № 4, поки що ні
+# SA0001 не застосовується до частини згенерованої XML-документації
 dotnet_diagnostic.SA0001.severity = none
 # SA1600 Елемент має бути описаний - Правило курсу, лишаємо
 dotnet_diagnostic.SA1600.severity = warning
 dotnet_diagnostic.SA1601.severity = none
-dotnet_diagnostic.SA1602.severity = none
-dotnet_diagnostic.SA1611.severity = none
-dotnet_diagnostic.SA1615.severity = none
+dotnet_diagnostic.SA1602.severity = warning
+dotnet_diagnostic.SA1611.severity = warning
+dotnet_diagnostic.SA1615.severity = warning
 # правила англомовних шаблонів XML не застосовуються до україномовної документації
 dotnet_diagnostic.SA1642.severity = none
 dotnet_diagnostic.SA1623.severity = none
 # SA1204 розташування static методів лишаємо на розсуд архітектури
 dotnet_diagnostic.SA1204.severity = none
-# CA1305 відсутність IFormatProvider записано до технічного боргу в успадкованому модулі
+# CA1305: борг TD-001 у docs/self-work-01/TECHNICAL_DEBT.md; успадкований Order.cs
 dotnet_diagnostic.CA1305.severity = none
 # кома в кінці багаторядкового ініціалізатора необов’язкова
 dotnet_diagnostic.SA1413.severity = none
@@ -66,6 +79,4 @@ dotnet_diagnostic.SA1028.severity = warning
 dotnet_diagnostic.SA1201.severity = warning
 dotnet_diagnostic.SA1503.severity = warning
 dotnet_diagnostic.SA1516.severity = warning
-dotnet_diagnostic.IDE0055.severity = warning
 dotnet_diagnostic.CS1591.severity = warning
-
