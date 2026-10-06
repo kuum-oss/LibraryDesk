@@ -197,7 +197,8 @@ dotnet run --project LibraryDesk.App
 a4ccf85 test: pin legacy loan processor behaviour
 6f51ebf feat: add defensive guards for loan documents
 de68819 refactor: separate pure loan calculation from output
-<поточний коміт> docs: add laboratory work 3 report
+c3050cb chore: isolate legacy analyzer warnings
+289f45e docs: add laboratory work 3 report
 ```
 
 ## 10. Відповіді на контрольні питання
