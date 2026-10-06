@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibraryDesk.Core", "Library
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibraryDesk.App", "LibraryDesk.App\LibraryDesk.App.csproj", "{967B9AEA-67AD-4335-B2DE-730B79038AC3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibraryDesk.Tests", "LibraryDesk.Tests\LibraryDesk.Tests.csproj", "{C9B0BC49-1C8B-4A9A-9E28-000000000003}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,6 +43,10 @@ Global
 		{967B9AEA-67AD-4335-B2DE-730B79038AC3}.Release|x64.Build.0 = Release|Any CPU
 		{967B9AEA-67AD-4335-B2DE-730B79038AC3}.Release|x86.ActiveCfg = Release|Any CPU
 		{967B9AEA-67AD-4335-B2DE-730B79038AC3}.Release|x86.Build.0 = Release|Any CPU
+		{C9B0BC49-1C8B-4A9A-9E28-000000000003}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C9B0BC49-1C8B-4A9A-9E28-000000000003}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C9B0BC49-1C8B-4A9A-9E28-000000000003}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C9B0BC49-1C8B-4A9A-9E28-000000000003}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
