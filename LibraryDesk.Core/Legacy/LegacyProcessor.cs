@@ -1,3 +1,5 @@
+#pragma warning disable SA1117, SA1122, SA1407, SA1513, SA1611, SA1615, CA1847
+
 namespace LibraryDesk.Core.Legacy;
 
 /// <summary>Початкова реалізація розрахунку для характеризаційних тестів.</summary>
