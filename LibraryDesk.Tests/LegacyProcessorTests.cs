@@ -1,4 +1,5 @@
 using LibraryDesk.Core.Legacy;
+using Xunit;
 
 namespace LibraryDesk.Tests;
 
