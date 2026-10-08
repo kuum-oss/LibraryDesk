@@ -7,41 +7,72 @@ using LibraryDesk.Core.Pricing;
 using LibraryDesk.Core.Reports;
 using LibraryDesk.Core.Services;
 using LibraryDesk.Core.Storage;
+using Microsoft.Extensions.Logging;
 
 Console.OutputEncoding = Encoding.UTF8;
-ILoanRepository repository = new InMemoryLoanRepository();
-IPricingPolicy pricing = new DiscountPricingPolicy(0.05m);
-INotifier notifier = new ConsoleLoanNotifier();
-LoanService service = new(repository, pricing, notifier);
-
-Reader reader = new(100, "Іваненко", "reader@example.com", true);
-Book book = new("978-966-00-0001-0", "Основи програмування", 250m, 3);
-DateTimeOffset issuedAt = new(2026, 10, 8, 10, 0, 0, TimeSpan.FromHours(3));
-Loan loan = new(1001, reader.Id, issuedAt, new DateOnly(2026, 10, 22));
-LoanItem? parsedItem = null;
-foreach (string daysInput in new[] { "два", "2" })
+using ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
 {
-    Result<LoanItem> parsed = LoanItemParser.Parse(book.Isbn, daysInput, "250");
-    if (!parsed.IsSuccess)
+    builder.AddSimpleConsole(options =>
     {
-        Console.WriteLine($"Помилка вводу: {parsed.Error}");
-        Console.WriteLine("Повторіть введення.");
-        continue;
-    }
+        options.TimestampFormat = "HH:mm:ss ";
+        options.IncludeScopes = true;
+        options.SingleLine = true;
+    });
+    builder.SetMinimumLevel(LogLevel.Debug);
+});
 
-    parsedItem = parsed.Value;
-    break;
+ILogger applicationLogger = loggerFactory.CreateLogger("LibraryDesk.App");
+try
+{
+    RunApplication(loggerFactory);
+}
+catch (DomainRuleException exception)
+{
+    ApplicationLog.DomainRuleFailed(applicationLogger, exception, exception.Rule, exception.Message);
+    Environment.ExitCode = 1;
+}
+catch (Exception exception)
+{
+    ApplicationLog.UnexpectedFailure(applicationLogger, exception);
+    Environment.ExitCode = 2;
 }
 
-loan.AddItem(parsedItem ?? throw new InvalidOperationException("Не отримано коректної позиції формуляра."));
-loan.Issue();
-service.Register(loan, reader);
+static void RunApplication(ILoggerFactory loggerFactory)
+{
+    ILoanRepository repository = new InMemoryLoanRepository();
+    IPricingPolicy pricing = new DiscountPricingPolicy(0.05m);
+    INotifier notifier = new ConsoleLoanNotifier();
+    LoanService service = new(repository, pricing, notifier, loggerFactory.CreateLogger<LoanService>());
 
-Console.WriteLine($"Формуляр № {loan.Id}");
-Console.WriteLine($"Читач: {reader.FullName}");
-Console.WriteLine($"Книга: {book.Title}");
-Console.WriteLine($"Сума: {service.TotalOf(loan):0.00}");
-Console.WriteLine($"Стан: {loan.Status}");
+    Reader reader = new(100, "Іваненко", "reader@example.com", true);
+    Book book = new("978-966-00-0001-0", "Основи програмування", 250m, 3);
+    DateTimeOffset issuedAt = new(2026, 10, 8, 10, 0, 0, TimeSpan.FromHours(3));
+    Loan loan = new(1001, reader.Id, issuedAt, new DateOnly(2026, 10, 22));
+    LoanItem? parsedItem = null;
+    foreach (string daysInput in new[] { "два", "2" })
+    {
+        Result<LoanItem> parsed = LoanItemParser.Parse(book.Isbn, daysInput, "250");
+        if (!parsed.IsSuccess)
+        {
+            Console.WriteLine($"Помилка вводу: {parsed.Error}");
+            Console.WriteLine("Повторіть введення.");
+            continue;
+        }
 
-LoanReportRow row = new(loan.Id, service.TotalOf(loan), loan.Status);
-Console.WriteLine(LoanCsvReport.BuildCsv(new[] { row }));
+        parsedItem = parsed.Value;
+        break;
+    }
+
+    loan.AddItem(parsedItem ?? throw new InvalidOperationException("Не отримано коректної позиції формуляра."));
+    loan.Issue();
+    service.Register(loan, reader);
+
+    Console.WriteLine($"Формуляр № {loan.Id}");
+    Console.WriteLine($"Читач: {reader.FullName}");
+    Console.WriteLine($"Книга: {book.Title}");
+    Console.WriteLine($"Сума: {service.TotalOf(loan):0.00}");
+    Console.WriteLine($"Стан: {loan.Status}");
+
+    LoanReportRow row = new(loan.Id, service.TotalOf(loan), loan.Status);
+    Console.WriteLine(LoanCsvReport.BuildCsv(new[] { row }));
+}

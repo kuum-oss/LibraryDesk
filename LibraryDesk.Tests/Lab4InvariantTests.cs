@@ -4,6 +4,7 @@ using LibraryDesk.Core.Errors;
 using LibraryDesk.Core.Pricing;
 using LibraryDesk.Core.Services;
 using LibraryDesk.Core.Storage;
+using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
 namespace LibraryDesk.Tests;
@@ -29,7 +30,7 @@ public sealed class Lab4InvariantTests
     {
         ILoanRepository repository = new InMemoryLoanRepository();
         IPricingPolicy pricing = new DiscountPricingPolicy(0.10m);
-        LoanService service = new(repository, pricing, new TestNotifier());
+        LoanService service = new(repository, pricing, new TestNotifier(), NullLogger<LoanService>.Instance);
         Loan loan = NewLoan(2);
         loan.AddItem(new LoanItem("ISBN-2", 2, 100m));
 
