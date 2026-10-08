@@ -1,0 +1,8 @@
+68520cb test(domain): cover three lab 4 invariant scenarios
+4947bb8 refactor(solid): separate notification reporting and archive view
+fccb06a docs(solid): add legacy loan manager and five-point audit
+3c011f1 feat(services): inject loan storage and pricing policies
+bcad667 feat(domain): encapsulate loan lifecycle and catalog stock
+b22d31b feat(domain): enforce immutable loan item and reader invariants
+256aad6 docs(model): describe LibraryDesk entities and loan states
+2e392f6 merge: complete laboratory work 3
