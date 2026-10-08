@@ -66,6 +66,11 @@ static void RunApplication(ILoggerFactory loggerFactory)
     loan.AddItem(parsedItem ?? throw new InvalidOperationException("Не отримано коректної позиції формуляра."));
     loan.Issue();
     service.Register(loan, reader);
+    string auditPath = Path.Combine(AppContext.BaseDirectory, "lab05-audit.log");
+    using (FileAuditLog audit = new(auditPath))
+    {
+        audit.Write("loan.registered", loan.Id);
+    }
 
     Console.WriteLine($"Формуляр № {loan.Id}");
     Console.WriteLine($"Читач: {reader.FullName}");
