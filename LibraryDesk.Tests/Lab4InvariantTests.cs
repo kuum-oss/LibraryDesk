@@ -1,5 +1,6 @@
 using LibraryDesk.Core.Abstractions;
 using LibraryDesk.Core.Domain;
+using LibraryDesk.Core.Errors;
 using LibraryDesk.Core.Pricing;
 using LibraryDesk.Core.Services;
 using LibraryDesk.Core.Storage;
@@ -20,7 +21,7 @@ public sealed class Lab4InvariantTests
     {
         Loan loan = NewLoan(1);
 
-        Assert.Throws<InvalidOperationException>(() => loan.Return());
+        Assert.Throws<DomainRuleException>(() => loan.Return());
     }
 
     [Fact]

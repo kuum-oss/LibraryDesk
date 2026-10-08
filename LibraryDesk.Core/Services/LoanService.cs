@@ -1,5 +1,6 @@
 using LibraryDesk.Core.Abstractions;
 using LibraryDesk.Core.Domain;
+using LibraryDesk.Core.Errors;
 
 namespace LibraryDesk.Core.Services;
 
@@ -30,16 +31,53 @@ public sealed class LoanService
         ArgumentNullException.ThrowIfNull(reader);
         if (loan.Status != LoanStatus.Active)
         {
-            throw new InvalidOperationException("Реєструють лише виданий формуляр.");
+            throw new DomainRuleException(
+                "loan.registerable",
+                $"Формуляр {loan.Id} має стан {loan.Status}; реєструвати можна лише стан Active.");
         }
 
         if (loan.ReaderId != reader.Id)
         {
-            throw new ArgumentException("Читач не відповідає формуляру.", nameof(reader));
+            throw new DomainRuleException(
+                "loan.reader",
+                $"Формуляр {loan.Id} належить читачеві {loan.ReaderId}, а передано читача {reader.Id}.");
         }
 
         _repository.Add(loan);
         _notifier.Notify(reader, loan, TotalOf(loan));
+    }
+
+    /// <summary>Повертає формуляр або повідомляє про порушення правила існування.</summary>
+    /// <param name="loanId">Ідентифікатор формуляра.</param>
+    /// <returns>Знайдений формуляр.</returns>
+    /// <exception cref="DomainRuleException">Формуляр не знайдено.</exception>
+    public Loan GetRequiredLoan(int loanId)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(loanId);
+        return _repository.GetById(loanId)
+            ?? throw new DomainRuleException(
+                "loan.exists",
+                $"Формуляр {loanId} не знайдено.");
+    }
+
+    /// <summary>Додає типізовану позицію до формуляра.</summary>
+    /// <param name="loanId">Ідентифікатор формуляра.</param>
+    /// <param name="item">Перевірена позиція формуляра.</param>
+    public void AddItem(int loanId, LoanItem item)
+    {
+        ArgumentNullException.ThrowIfNull(item);
+        Loan loan = GetRequiredLoan(loanId);
+        loan.AddItem(item);
+    }
+
+    /// <summary>Скасовує чернетку формуляра із зазначеною причиною.</summary>
+    /// <param name="loanId">Ідентифікатор формуляра.</param>
+    /// <param name="reason">Причина скасування для контексту операції.</param>
+    public void Cancel(int loanId, string reason)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(reason);
+        Loan loan = GetRequiredLoan(loanId);
+        loan.Cancel();
     }
 
     /// <summary>Обчислює вартість формуляра за поточною політикою.</summary>
@@ -52,6 +90,13 @@ public sealed class LoanService
         foreach (LoanItem item in loan.Items)
         {
             total += _pricing.PriceOf(item);
+        }
+
+        if (total < 0m)
+        {
+            throw new DomainRuleException(
+                "loan.total.nonnegative",
+                $"Вартість формуляра {loan.Id} не може бути від'ємною: {total}.");
         }
 
         return total;

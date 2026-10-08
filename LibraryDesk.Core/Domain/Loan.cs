@@ -1,5 +1,7 @@
 namespace LibraryDesk.Core.Domain;
 
+using LibraryDesk.Core.Errors;
+
 /// <summary>Формуляр видачі книг читачеві.</summary>
 public sealed class Loan
 {
@@ -56,7 +58,9 @@ public sealed class Loan
         EnsureStatus(LoanStatus.Draft);
         if (_items.Count == 0)
         {
-            throw new InvalidOperationException("Не можна видати порожній формуляр.");
+            throw new DomainRuleException(
+                "loan.not-empty",
+                $"Формуляр {Id} не можна видати без жодної позиції.");
         }
 
         Status = LoanStatus.Active;
@@ -76,7 +80,9 @@ public sealed class Loan
         EnsureStatus(LoanStatus.Active);
         if (today <= DueOn)
         {
-            throw new InvalidOperationException("Термін повернення ще не минув.");
+            throw new DomainRuleException(
+                "loan.overdue-date",
+                $"Формуляр {Id} має строк {DueOn:yyyy-MM-dd}; дата {today:yyyy-MM-dd} ще не є простроченням.");
         }
 
         Status = LoanStatus.Overdue;
@@ -87,7 +93,9 @@ public sealed class Loan
     {
         if (Status is not (LoanStatus.Active or LoanStatus.Overdue))
         {
-            throw new InvalidOperationException("Повернення дозволене лише після видачі.");
+            throw new DomainRuleException(
+                "loan.returnable",
+                $"Формуляр {Id} у стані {Status} не можна повернути.");
         }
 
         Status = LoanStatus.Returned;
@@ -98,7 +106,9 @@ public sealed class Loan
     {
         if (Status is not (LoanStatus.Active or LoanStatus.Overdue))
         {
-            throw new InvalidOperationException("Втрату можна зафіксувати лише для виданих книг.");
+            throw new DomainRuleException(
+                "loan.loss-recordable",
+                $"Формуляр {Id} у стані {Status} не дозволяє зафіксувати втрату.");
         }
 
         Status = LoanStatus.Lost;
@@ -121,7 +131,9 @@ public sealed class Loan
     {
         if (Status != required)
         {
-            throw new InvalidOperationException($"Операція дозволена лише у стані {required}.");
+            throw new DomainRuleException(
+                "loan.status",
+                $"Формуляр {Id} має стан {Status}; операція дозволена лише у стані {required}.");
         }
     }
 }
