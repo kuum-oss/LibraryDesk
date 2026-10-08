@@ -39,8 +39,6 @@ public class LoanLine
 
 public class LegacyLoanProcessor
 {
-    private decimal _tmpSum;
-    private decimal _tmpDiscount;
     private readonly DiscountPolicy _discounts = new();
     private readonly ShippingPolicy _shipping = new();
     private readonly ReportBuilder _report = new();
@@ -56,19 +54,19 @@ public class LegacyLoanProcessor
 
         _log.Add("ok " + request.DocumentId);
         var validItems = request.Items!;
-        _tmpSum = Subtotal(validItems);
-        _tmpDiscount = _discounts.For(
-            _tmpSum,
+        var subtotal = Subtotal(validItems);
+        var discount = _discounts.For(
+            subtotal,
             request.Reader.Kind,
             request.Reader.DoneCount);
-        decimal ship = _shipping.For(_tmpSum - _tmpDiscount);
-        decimal total = _tmpSum - _tmpDiscount + ship;
+        var shipping = _shipping.For(subtotal - discount);
+        var total = subtotal - discount + shipping;
         if (request.SendMail)
         {
             _log.Add("mail -> " + request.Reader.Email);
         }
 
-        return _report.Build(request, _tmpDiscount, ship, total);
+        return _report.Build(request, discount, shipping, total);
     }
 
     private static string? Validate(LoanRequest request)
