@@ -24,6 +24,7 @@ public class LegacyLoanProcessor
     private decimal _tmpDiscount;
     private readonly DiscountPolicy _discounts = new();
     private readonly ShippingPolicy _shipping = new();
+    private readonly ReportBuilder _report = new();
     private readonly List<string> _log = new();
 
     public string Handle(
@@ -51,23 +52,19 @@ public class LegacyLoanProcessor
         _tmpDiscount = _discounts.For(_tmpSum, readerKind, readerDone);
         decimal ship = _shipping.For(_tmpSum - _tmpDiscount);
         decimal total = _tmpSum - _tmpDiscount + ship;
-        string txt = "Документ #" + docId + "\n";
-        txt += "Клієнт: " + readerName + "\n";
-        for (int i = 0; i < validItems.Count; i++)
-        {
-            txt += validItems[i].Code + " x" + validItems[i].Qty + " = "
-                + (validItems[i].Qty * validItems[i].Price).ToString("0.00") + " " + currency + "\n";
-        }
-
-        txt += "Знижка: " + _tmpDiscount.ToString("0.00") + " " + currency + "\n";
-        txt += "Доставка: " + ship.ToString("0.00") + " " + currency + "\n";
-        txt += "Разом: " + total.ToString("0.00") + " " + currency + "\n";
         if (sendMail)
         {
             _log.Add("mail -> " + readerMail);
         }
 
-        return txt;
+        return _report.Build(
+            docId,
+            readerName,
+            validItems,
+            currency,
+            _tmpDiscount,
+            ship,
+            total);
     }
 
     private static string? Validate(
