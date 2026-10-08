@@ -22,6 +22,8 @@ public class LegacyLoanProcessor
 {
     private decimal _tmpSum;
     private decimal _tmpDiscount;
+    private readonly DiscountPolicy _discounts = new();
+    private readonly ShippingPolicy _shipping = new();
     private readonly List<string> _log = new();
 
     public string Handle(
@@ -46,8 +48,8 @@ public class LegacyLoanProcessor
         _log.Add("ok " + docId);
         var validItems = items!;
         _tmpSum = Subtotal(validItems);
-        _tmpDiscount = DiscountOf(_tmpSum, readerKind, readerDone);
-        decimal ship = ShippingOf(_tmpSum - _tmpDiscount);
+        _tmpDiscount = _discounts.For(_tmpSum, readerKind, readerDone);
+        decimal ship = _shipping.For(_tmpSum - _tmpDiscount);
         decimal total = _tmpSum - _tmpDiscount + ship;
         string txt = "Документ #" + docId + "\n";
         txt += "Клієнт: " + readerName + "\n";
@@ -107,30 +109,12 @@ public class LegacyLoanProcessor
         return sum;
     }
 
-    private static decimal DiscountOf(decimal subtotal, ReaderKind kind, int doneCount)
-    {
-        decimal rate = kind switch
-        {
-            ReaderKind.Vip => PricingRules.VipRate,
-            ReaderKind.Staff => PricingRules.StaffRate,
-            _ when doneCount > PricingRules.LoyalLoans => PricingRules.LoyalRate,
-            _ => 0m,
-        };
-
-        return Math.Min(subtotal * rate, PricingRules.MaxDiscount);
-    }
-
-    private static decimal ShippingOf(decimal payable)
-    {
-        return payable < PricingRules.FreeShippingFrom ? PricingRules.ShippingCost : 0m;
-    }
-
     public decimal Preview(ReaderKind readerKind, int readerDone, List<LoanLine> items)
     {
         var subtotal = Subtotal(items);
-        var discount = DiscountOf(subtotal, readerKind, readerDone);
+        var discount = _discounts.For(subtotal, readerKind, readerDone);
         var payable = subtotal - discount;
-        return payable + ShippingOf(payable);
+        return payable + _shipping.For(payable);
     }
 
     public string DescribeReader(Reader reader)
