@@ -76,33 +76,33 @@ public class LegacyLoanProcessor
         _tmpDiscount = 0m;
         if (readerKind == "vip")
         {
-            _tmpDiscount = _tmpSum * 0.15m;
-            if (_tmpDiscount > 500m)
+            _tmpDiscount = _tmpSum * PricingRules.VipRate;
+            if (_tmpDiscount > PricingRules.MaxDiscount)
             {
-                _tmpDiscount = 500m;
+                _tmpDiscount = PricingRules.MaxDiscount;
             }
         }
         else if (readerKind == "staff")
         {
-            _tmpDiscount = _tmpSum * 0.30m;
-            if (_tmpDiscount > 500m)
+            _tmpDiscount = _tmpSum * PricingRules.StaffRate;
+            if (_tmpDiscount > PricingRules.MaxDiscount)
             {
-                _tmpDiscount = 500m;
+                _tmpDiscount = PricingRules.MaxDiscount;
             }
         }
-        else if (readerDone > 10)
+        else if (readerDone > PricingRules.LoyalLoans)
         {
-            _tmpDiscount = _tmpSum * 0.05m;
-            if (_tmpDiscount > 500m)
+            _tmpDiscount = _tmpSum * PricingRules.LoyalRate;
+            if (_tmpDiscount > PricingRules.MaxDiscount)
             {
-                _tmpDiscount = 500m;
+                _tmpDiscount = PricingRules.MaxDiscount;
             }
         }
 
         decimal ship = 0m;
-        if (_tmpSum - _tmpDiscount < 1000m)
+        if (_tmpSum - _tmpDiscount < PricingRules.FreeShippingFrom)
         {
-            ship = 60m;
+            ship = PricingRules.ShippingCost;
         }
 
         decimal total = _tmpSum - _tmpDiscount + ship;
@@ -136,33 +136,33 @@ public class LegacyLoanProcessor
         decimal discount = 0m;
         if (readerKind == "vip")
         {
-            discount = sum * 0.15m;
-            if (discount > 500m)
+            discount = sum * PricingRules.VipRate;
+            if (discount > PricingRules.MaxDiscount)
             {
-                discount = 500m;
+                discount = PricingRules.MaxDiscount;
             }
         }
         else if (readerKind == "staff")
         {
-            discount = sum * 0.30m;
-            if (discount > 500m)
+            discount = sum * PricingRules.StaffRate;
+            if (discount > PricingRules.MaxDiscount)
             {
-                discount = 500m;
+                discount = PricingRules.MaxDiscount;
             }
         }
-        else if (readerDone > 10)
+        else if (readerDone > PricingRules.LoyalLoans)
         {
-            discount = sum * 0.05m;
-            if (discount > 500m)
+            discount = sum * PricingRules.LoyalRate;
+            if (discount > PricingRules.MaxDiscount)
             {
-                discount = 500m;
+                discount = PricingRules.MaxDiscount;
             }
         }
 
         decimal shipping = 0m;
-        if (sum - discount < 1000m)
+        if (sum - discount < PricingRules.FreeShippingFrom)
         {
-            shipping = 60m;
+            shipping = PricingRules.ShippingCost;
         }
 
         return sum - discount + shipping;
@@ -176,7 +176,7 @@ public class LegacyLoanProcessor
             description += " [VIP]";
         }
 
-        if (reader.DoneCount > 10)
+        if (reader.DoneCount > PricingRules.LoyalLoans)
         {
             description += " [ЛОЯЛЬНИЙ]";
         }
