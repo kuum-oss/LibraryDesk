@@ -127,45 +127,10 @@ public class LegacyLoanProcessor
 
     public decimal Preview(ReaderKind readerKind, int readerDone, List<LoanLine> items)
     {
-        decimal sum = 0m;
-        foreach (var item in items)
-        {
-            sum += item.Qty * item.Price;
-        }
-
-        decimal discount = 0m;
-        if (readerKind == ReaderKind.Vip)
-        {
-            discount = sum * PricingRules.VipRate;
-            if (discount > PricingRules.MaxDiscount)
-            {
-                discount = PricingRules.MaxDiscount;
-            }
-        }
-        else if (readerKind == ReaderKind.Staff)
-        {
-            discount = sum * PricingRules.StaffRate;
-            if (discount > PricingRules.MaxDiscount)
-            {
-                discount = PricingRules.MaxDiscount;
-            }
-        }
-        else if (readerDone > PricingRules.LoyalLoans)
-        {
-            discount = sum * PricingRules.LoyalRate;
-            if (discount > PricingRules.MaxDiscount)
-            {
-                discount = PricingRules.MaxDiscount;
-            }
-        }
-
-        decimal shipping = 0m;
-        if (sum - discount < PricingRules.FreeShippingFrom)
-        {
-            shipping = PricingRules.ShippingCost;
-        }
-
-        return sum - discount + shipping;
+        var subtotal = Subtotal(items);
+        var discount = DiscountOf(subtotal, readerKind, readerDone);
+        var payable = subtotal - discount;
+        return payable + ShippingOf(payable);
     }
 
     public string DescribeReader(Reader reader)
