@@ -45,44 +45,9 @@ public class LegacyLoanProcessor
 
         _log.Add("ok " + docId);
         var validItems = items!;
-        _tmpSum = 0m;
-        for (int i = 0; i < validItems.Count; i++)
-        {
-            _tmpSum += validItems[i].Qty * validItems[i].Price;
-        }
-
-        _tmpDiscount = 0m;
-        if (readerKind == ReaderKind.Vip)
-        {
-            _tmpDiscount = _tmpSum * PricingRules.VipRate;
-            if (_tmpDiscount > PricingRules.MaxDiscount)
-            {
-                _tmpDiscount = PricingRules.MaxDiscount;
-            }
-        }
-        else if (readerKind == ReaderKind.Staff)
-        {
-            _tmpDiscount = _tmpSum * PricingRules.StaffRate;
-            if (_tmpDiscount > PricingRules.MaxDiscount)
-            {
-                _tmpDiscount = PricingRules.MaxDiscount;
-            }
-        }
-        else if (readerDone > PricingRules.LoyalLoans)
-        {
-            _tmpDiscount = _tmpSum * PricingRules.LoyalRate;
-            if (_tmpDiscount > PricingRules.MaxDiscount)
-            {
-                _tmpDiscount = PricingRules.MaxDiscount;
-            }
-        }
-
-        decimal ship = 0m;
-        if (_tmpSum - _tmpDiscount < PricingRules.FreeShippingFrom)
-        {
-            ship = PricingRules.ShippingCost;
-        }
-
+        _tmpSum = Subtotal(validItems);
+        _tmpDiscount = DiscountOf(_tmpSum, readerKind, readerDone);
+        decimal ship = ShippingOf(_tmpSum - _tmpDiscount);
         decimal total = _tmpSum - _tmpDiscount + ship;
         string txt = "Документ #" + docId + "\n";
         txt += "Клієнт: " + readerName + "\n";
@@ -129,6 +94,35 @@ public class LegacyLoanProcessor
         }
 
         return null;
+    }
+
+    private static decimal Subtotal(IReadOnlyList<LoanLine> items)
+    {
+        decimal sum = 0m;
+        foreach (var item in items)
+        {
+            sum += item.Qty * item.Price;
+        }
+
+        return sum;
+    }
+
+    private static decimal DiscountOf(decimal subtotal, ReaderKind kind, int doneCount)
+    {
+        decimal rate = kind switch
+        {
+            ReaderKind.Vip => PricingRules.VipRate,
+            ReaderKind.Staff => PricingRules.StaffRate,
+            _ when doneCount > PricingRules.LoyalLoans => PricingRules.LoyalRate,
+            _ => 0m,
+        };
+
+        return Math.Min(subtotal * rate, PricingRules.MaxDiscount);
+    }
+
+    private static decimal ShippingOf(decimal payable)
+    {
+        return payable < PricingRules.FreeShippingFrom ? PricingRules.ShippingCost : 0m;
     }
 
     public decimal Preview(ReaderKind readerKind, int readerDone, List<LoanLine> items)
