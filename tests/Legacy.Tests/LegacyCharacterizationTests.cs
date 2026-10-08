@@ -31,18 +31,9 @@ public sealed class LegacyCharacterizationTests
         };
         var sut = new LegacyLoanProcessor();
 
-        var actual = sut.Handle(
-            1001,
-            7,
-            "Іван",
-            mail,
-            ReaderKind.Regular,
-            0,
-            items,
-            state,
-            "UAH",
-            new DateTime(2026, 3, 1),
-            false);
+        var request = Request(mail, ReaderKind.Regular, 0, items, state, false);
+
+        var actual = sut.Handle(request);
 
         Assert.Equal(expected, actual);
     }
@@ -52,18 +43,15 @@ public sealed class LegacyCharacterizationTests
     {
         var sut = new LegacyLoanProcessor();
 
-        var report = sut.Handle(
-            1001,
-            7,
-            "Іван",
+        var request = Request(
             "a@b.c",
             ReaderKind.Vip,
             3,
             TwoLines(),
             LoanState.New,
-            "UAH",
-            new DateTime(2026, 3, 1),
             false);
+
+        var report = sut.Handle(request);
         var expected =
             "Документ #1001\n"
             + "Клієнт: Іван\n"
@@ -131,18 +119,15 @@ public sealed class LegacyCharacterizationTests
     {
         var sut = new LegacyLoanProcessor();
 
-        sut.Handle(
-            1001,
-            7,
-            "Іван",
+        var request = Request(
             "a@b.c",
             ReaderKind.Regular,
             0,
             TwoLines(),
             LoanState.Paid,
-            "UAH",
-            new DateTime(2026, 3, 1),
             true);
+
+        sut.Handle(request);
 
         Assert.Equal("ok 1001\nmail -> a@b.c\n", sut.DumpLog());
     }
@@ -152,4 +137,24 @@ public sealed class LegacyCharacterizationTests
         new() { Code = "A-1", Qty = 2, Price = 150m },
         new() { Code = "B-2", Qty = 1, Price = 400m },
     ];
+
+    private static LoanRequest Request(
+        string email,
+        ReaderKind kind,
+        int doneCount,
+        IReadOnlyList<LoanLine>? items,
+        LoanState state,
+        bool sendMail)
+    {
+        var reader = new Reader
+        {
+            Id = 7,
+            Name = "Іван",
+            Email = email,
+            Kind = kind,
+            DoneCount = doneCount,
+        };
+
+        return new LoanRequest(1001, reader, items, state, "UAH", sendMail);
+    }
 }

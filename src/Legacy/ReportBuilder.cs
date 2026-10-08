@@ -5,25 +5,22 @@ namespace LibraryDesk.Legacy;
 public sealed class ReportBuilder
 {
     public string Build(
-        int documentId,
-        string readerName,
-        IReadOnlyList<LoanLine> items,
-        string currency,
+        LoanRequest request,
         decimal discount,
         decimal shipping,
         decimal total)
     {
         var report = new StringBuilder();
-        report.Append("Документ #").Append(documentId).Append('\n');
-        report.Append("Клієнт: ").Append(readerName).Append('\n');
-        foreach (var item in items)
+        report.Append("Документ #").Append(request.DocumentId).Append('\n');
+        report.Append("Клієнт: ").Append(request.Reader.Name).Append('\n');
+        foreach (var item in request.Items!)
         {
-            report.Append(Line(item, currency));
+            report.Append(Line(item, request.Currency));
         }
 
-        report.Append(Money("Знижка", discount, currency));
-        report.Append(Money("Доставка", shipping, currency));
-        report.Append(Money("Разом", total, currency));
+        report.Append(Money("Знижка", discount, request.Currency));
+        report.Append(Money("Доставка", shipping, request.Currency));
+        report.Append(Money("Разом", total, request.Currency));
         return report.ToString();
     }
 

@@ -27,67 +27,49 @@ public class LegacyLoanProcessor
     private readonly ReportBuilder _report = new();
     private readonly List<string> _log = new();
 
-    public string Handle(
-        int docId,
-        int readerId,
-        string readerName,
-        string? readerMail,
-        ReaderKind readerKind,
-        int readerDone,
-        List<LoanLine>? items,
-        LoanState state,
-        string currency,
-        DateTime createdAt,
-        bool sendMail)
+    public string Handle(LoanRequest request)
     {
-        var error = Validate(items, state, readerMail);
+        var error = Validate(request);
         if (error is not null)
         {
             return error;
         }
 
-        _log.Add("ok " + docId);
-        var validItems = items!;
+        _log.Add("ok " + request.DocumentId);
+        var validItems = request.Items!;
         _tmpSum = Subtotal(validItems);
-        _tmpDiscount = _discounts.For(_tmpSum, readerKind, readerDone);
+        _tmpDiscount = _discounts.For(
+            _tmpSum,
+            request.Reader.Kind,
+            request.Reader.DoneCount);
         decimal ship = _shipping.For(_tmpSum - _tmpDiscount);
         decimal total = _tmpSum - _tmpDiscount + ship;
-        if (sendMail)
+        if (request.SendMail)
         {
-            _log.Add("mail -> " + readerMail);
+            _log.Add("mail -> " + request.Reader.Email);
         }
 
-        return _report.Build(
-            docId,
-            readerName,
-            validItems,
-            currency,
-            _tmpDiscount,
-            ship,
-            total);
+        return _report.Build(request, _tmpDiscount, ship, total);
     }
 
-    private static string? Validate(
-        List<LoanLine>? items,
-        LoanState state,
-        string? readerMail)
+    private static string? Validate(LoanRequest request)
     {
-        if (items is null)
+        if (request.Items is null)
         {
             return "ERR: null";
         }
 
-        if (items.Count == 0)
+        if (request.Items.Count == 0)
         {
             return "ERR: empty";
         }
 
-        if (state is not (LoanState.New or LoanState.Paid))
+        if (request.State is not (LoanState.New or LoanState.Paid))
         {
             return "ERR: state";
         }
 
-        if (readerMail is null || !readerMail.Contains("@"))
+        if (request.Reader.Email is null || !request.Reader.Email.Contains("@"))
         {
             return "ERR: mail";
         }
