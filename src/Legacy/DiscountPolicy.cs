@@ -2,15 +2,25 @@ namespace LibraryDesk.Legacy;
 
 public sealed class DiscountPolicy
 {
-    public decimal For(decimal subtotal, ReaderKind kind, int doneCount)
+    private readonly IReadOnlyList<IDiscountRule> _rules =
+    [
+        new VipDiscountRule(),
+        new StaffDiscountRule(),
+        new LoyalReaderDiscountRule(),
+    ];
+
+    public decimal For(decimal subtotal, Reader reader)
     {
-        var rate = kind switch
+        decimal rate = 0m;
+        foreach (var rule in _rules)
         {
-            ReaderKind.Vip => PricingRules.VipRate,
-            ReaderKind.Staff => PricingRules.StaffRate,
-            _ when doneCount > PricingRules.LoyalLoans => PricingRules.LoyalRate,
-            _ => 0m,
-        };
+            var matchingRate = rule.RateFor(reader);
+            if (matchingRate.HasValue)
+            {
+                rate = matchingRate.Value;
+                break;
+            }
+        }
 
         return Math.Min(subtotal * rate, PricingRules.MaxDiscount);
     }

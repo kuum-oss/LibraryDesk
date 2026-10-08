@@ -55,10 +55,7 @@ public class LegacyLoanProcessor
         _log.Add("ok " + request.DocumentId);
         var validItems = request.Items!;
         var subtotal = Subtotal(validItems);
-        var discount = _discounts.For(
-            subtotal,
-            request.Reader.Kind,
-            request.Reader.DoneCount);
+        var discount = _discounts.For(subtotal, request.Reader);
         var shipping = _shipping.For(subtotal - discount);
         var total = subtotal - discount + shipping;
         if (request.SendMail)
@@ -105,10 +102,10 @@ public class LegacyLoanProcessor
         return sum;
     }
 
-    public decimal Preview(ReaderKind readerKind, int readerDone, List<LoanLine> items)
+    public decimal Preview(Reader reader, List<LoanLine> items)
     {
         var subtotal = Subtotal(items);
-        var discount = _discounts.For(subtotal, readerKind, readerDone);
+        var discount = _discounts.For(subtotal, reader);
         var payable = subtotal - discount;
         return payable + _shipping.For(payable);
     }

@@ -75,8 +75,9 @@ public sealed class LegacyCharacterizationTests
         decimal expected)
     {
         var sut = new LegacyLoanProcessor();
+        var reader = new Reader { Kind = kind, DoneCount = done };
 
-        var total = sut.Preview(kind, done, TwoLines());
+        var total = sut.Preview(reader, TwoLines());
 
         Assert.Equal(expected, total);
     }
@@ -89,8 +90,9 @@ public sealed class LegacyCharacterizationTests
             new() { Code = "BOUNDARY", Qty = 1, Price = 1000m },
         };
         var sut = new LegacyLoanProcessor();
+        var reader = new Reader { Kind = ReaderKind.Regular };
 
-        var total = sut.Preview(ReaderKind.Regular, 0, items);
+        var total = sut.Preview(reader, items);
 
         Assert.Equal(1000m, total);
     }
