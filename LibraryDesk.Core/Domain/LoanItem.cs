@@ -1,17 +1,32 @@
 namespace LibraryDesk.Core.Domain;
 
-/// <summary>Позиція у формулярі видачі: книга, кількість днів прокату та тариф за день.</summary>
-public sealed class LoanItem
+/// <summary>Незмінна позиція формуляра видачі книги.</summary>
+public sealed record LoanItem
 {
-    /// <summary>Міжнародний стандартний номер книги.</summary>
-    public string Isbn { get; init; } = string.Empty;
+    /// <summary>Створює перевірену позицію прокату.</summary>
+    /// <param name="isbn">Ідентифікатор книги в каталозі.</param>
+    /// <param name="days">Кількість днів прокату.</param>
+    /// <param name="dailyRate">Денний тариф у грошових одиницях.</param>
+    public LoanItem(string isbn, int days, decimal dailyRate)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(isbn);
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(days);
+        ArgumentOutOfRangeException.ThrowIfNegative(dailyRate);
+
+        Isbn = isbn;
+        Days = days;
+        DailyRate = dailyRate;
+    }
+
+    /// <summary>Ідентифікатор книги в каталозі.</summary>
+    public string Isbn { get; }
 
     /// <summary>Кількість днів прокату.</summary>
-    public int Days { get; init; }
+    public int Days { get; }
 
     /// <summary>Денний тариф за прокат книги.</summary>
-    public decimal DailyRate { get; init; }
+    public decimal DailyRate { get; }
 
-    /// <summary>Загальна сума за прокат цієї позиції.</summary>
+    /// <summary>Вартість прокату без знижки.</summary>
     public decimal Amount => Days * DailyRate;
 }

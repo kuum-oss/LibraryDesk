@@ -13,8 +13,8 @@ public sealed class DocumentCalculatorTests
             1, "Іваненко", "i@ex.com", true,
             new List<LoanItem>
             {
-                new() { Isbn = "A1", Days = 12, DailyRate = 100m },
-                new() { Isbn = "B2", Days = 1, DailyRate = 250m },
+                new("A1", 12, 100m),
+                new("B2", 1, 250m),
             },
             new DateOnly(2026, 3, 10), null, LoanStatus.Active, 60m);
 
@@ -29,7 +29,7 @@ public sealed class DocumentCalculatorTests
     {
         LoanCalculationRequest request = new(
             2, "Петренко", "p@ex.com", false,
-            new List<LoanItem> { new() { Isbn = "A1", Days = 2, DailyRate = 200m } },
+            new List<LoanItem> { new("A1", 2, 200m) },
             new DateOnly(2026, 3, 10), PricingRules.SaleCoupon, LoanStatus.Returned, 60m);
 
         LoanTotalResult result = DocumentTotalCalculator.Calculate(request);
@@ -49,16 +49,14 @@ public sealed class DocumentCalculatorTests
     [Fact]
     public void Calculate_ZeroDays_ThrowsRange()
     {
-        LoanItem item = new() { Isbn = "A1", Days = 0, DailyRate = 10m };
-
-        Assert.Throws<ArgumentOutOfRangeException>(() => DocumentGuards.EnsureLineValid(item));
+        Assert.Throws<ArgumentOutOfRangeException>(() => new LoanItem("A1", 0, 10m));
     }
 
     [Fact]
     public void Calculate_InvalidReaderEmail_ThrowsArgument()
     {
         LoanCalculationRequest request = CreateRequest(
-            new[] { new LoanItem { Isbn = "A1", Days = 1, DailyRate = 10m } }) with
+            new[] { new LoanItem("A1", 1, 10m) }) with
         { ReaderEmail = "invalid-email" };
 
         Assert.Throws<ArgumentException>(() => DocumentTotalCalculator.Calculate(request));

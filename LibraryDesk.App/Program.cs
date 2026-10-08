@@ -10,8 +10,8 @@ LoanCalculationRequest request = new(
     true,
     new List<LoanItem>
     {
-        new() { Isbn = "SKU-1", Days = 3, DailyRate = 250m },
-        new() { Isbn = "SKU-2", Days = 12, DailyRate = 90m },
+        new("SKU-1", 3, 250m),
+        new("SKU-2", 12, 90m),
     },
     new DateOnly(2026, 10, 6),
     null,
