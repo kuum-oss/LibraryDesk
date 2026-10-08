@@ -17,4 +17,7 @@ public enum LoanStatus
 
     /// <summary>Книги втрачено.</summary>
     Lost = 4,
+
+    /// <summary>Формуляр ще не видано.</summary>
+    Draft = 5,
 }
