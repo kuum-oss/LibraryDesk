@@ -2,6 +2,7 @@ using System.Text;
 using LibraryDesk.App;
 using LibraryDesk.Core.Abstractions;
 using LibraryDesk.Core.Domain;
+using LibraryDesk.Core.Errors;
 using LibraryDesk.Core.Pricing;
 using LibraryDesk.Core.Reports;
 using LibraryDesk.Core.Services;
@@ -17,7 +18,22 @@ Reader reader = new(100, "Іваненко", "reader@example.com", true);
 Book book = new("978-966-00-0001-0", "Основи програмування", 250m, 3);
 DateTimeOffset issuedAt = new(2026, 10, 8, 10, 0, 0, TimeSpan.FromHours(3));
 Loan loan = new(1001, reader.Id, issuedAt, new DateOnly(2026, 10, 22));
-loan.AddItem(new LoanItem(book.Isbn, 2, book.RentalFee));
+LoanItem? parsedItem = null;
+foreach (string daysInput in new[] { "два", "2" })
+{
+    Result<LoanItem> parsed = LoanItemParser.Parse(book.Isbn, daysInput, "250");
+    if (!parsed.IsSuccess)
+    {
+        Console.WriteLine($"Помилка вводу: {parsed.Error}");
+        Console.WriteLine("Повторіть введення.");
+        continue;
+    }
+
+    parsedItem = parsed.Value;
+    break;
+}
+
+loan.AddItem(parsedItem ?? throw new InvalidOperationException("Не отримано коректної позиції формуляра."));
 loan.Issue();
 service.Register(loan, reader);
 
