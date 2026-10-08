@@ -37,40 +37,18 @@ public class LegacyLoanProcessor
         DateTime createdAt,
         bool sendMail)
     {
-        if (items != null)
+        var error = Validate(items, state, readerMail);
+        if (error is not null)
         {
-            if (items.Count > 0)
-            {
-                if (state == LoanState.New || state == LoanState.Paid)
-                {
-                    if (readerMail != null && readerMail.Contains("@"))
-                    {
-                        _log.Add("ok " + docId);
-                    }
-                    else
-                    {
-                        return "ERR: mail";
-                    }
-                }
-                else
-                {
-                    return "ERR: state";
-                }
-            }
-            else
-            {
-                return "ERR: empty";
-            }
-        }
-        else
-        {
-            return "ERR: null";
+            return error;
         }
 
+        _log.Add("ok " + docId);
+        var validItems = items!;
         _tmpSum = 0m;
-        for (int i = 0; i < items.Count; i++)
+        for (int i = 0; i < validItems.Count; i++)
         {
-            _tmpSum += items[i].Qty * items[i].Price;
+            _tmpSum += validItems[i].Qty * validItems[i].Price;
         }
 
         _tmpDiscount = 0m;
@@ -108,10 +86,10 @@ public class LegacyLoanProcessor
         decimal total = _tmpSum - _tmpDiscount + ship;
         string txt = "Документ #" + docId + "\n";
         txt += "Клієнт: " + readerName + "\n";
-        for (int i = 0; i < items.Count; i++)
+        for (int i = 0; i < validItems.Count; i++)
         {
-            txt += items[i].Code + " x" + items[i].Qty + " = "
-                + (items[i].Qty * items[i].Price).ToString("0.00") + " " + currency + "\n";
+            txt += validItems[i].Code + " x" + validItems[i].Qty + " = "
+                + (validItems[i].Qty * validItems[i].Price).ToString("0.00") + " " + currency + "\n";
         }
 
         txt += "Знижка: " + _tmpDiscount.ToString("0.00") + " " + currency + "\n";
@@ -123,6 +101,34 @@ public class LegacyLoanProcessor
         }
 
         return txt;
+    }
+
+    private static string? Validate(
+        List<LoanLine>? items,
+        LoanState state,
+        string? readerMail)
+    {
+        if (items is null)
+        {
+            return "ERR: null";
+        }
+
+        if (items.Count == 0)
+        {
+            return "ERR: empty";
+        }
+
+        if (state is not (LoanState.New or LoanState.Paid))
+        {
+            return "ERR: state";
+        }
+
+        if (readerMail is null || !readerMail.Contains("@"))
+        {
+            return "ERR: mail";
+        }
+
+        return null;
     }
 
     public decimal Preview(ReaderKind readerKind, int readerDone, List<LoanLine> items)
