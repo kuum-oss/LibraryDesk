@@ -1,0 +1,14 @@
+Команда: dotnet run --project LibraryDesk.App/LibraryDesk.App.csproj --no-build
+
+Помилка вводу: Кількість днів має бути цілим числом більше нуля.
+Повторіть введення.
+dbug: LibraryDesk.Core.Services.LoanService[5001]
+      => Loan:1001 Початок реєстрації формуляра 1001, сума 475.00
+Сповіщення для reader@example.com: формуляр № 1001, сума 475,00
+info: LibraryDesk.Core.Services.LoanService[5002]
+      => Loan:1001 Формуляр 1001 зареєстровано на суму 475.00
+Формуляр № 1001
+Читач: Іваненко
+Книга: Основи програмування
+Сума: 475,00
+Стан: Active

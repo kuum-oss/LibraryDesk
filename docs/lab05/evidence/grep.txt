@@ -1,0 +1,10 @@
+Перевірка продукційного коду ЛР № 5:
+
+rg -n "int\.Parse|decimal\.Parse|Console\.WriteLine" \
+  LibraryDesk.Core/Domain LibraryDesk.Core/Services \
+  LibraryDesk.Core/Storage LibraryDesk.Core/Errors
+
+Результат: збігів немає.
+
+Історичні приклади з попередніх робіт залишено в Legacy, LegacyLab4 та Order.cs;
+вони не використовуються новими сценаріями LibraryDesk.

@@ -48,5 +48,23 @@
   dotnet clean && dotnet build
   ```
 
+## Лабораторна робота 5
+
+У гілці `lab05-error-handling` реалізовано надійну обробку помилок:
+
+- зовнішні рядки перетворюються на `LoanItem` у `LoanItemParser`, а ядро працює лише з типізованими даними;
+- очікувані помилки введення повертаються як `Result<T>`;
+- порушення правил предметної області описує `DomainRuleException` з ідентифікатором правила та внутрішнім винятком;
+- `LoanService` використовує структуроване логування рівнів Debug, Information, Warning і Error з областю `Loan:{LoanId}`;
+- `FileAuditLog` реалізує `IDisposable`, а тест перевіряє звільнення файла після винятку.
+
+Перевірка роботи:
+
+```bash
+dotnet build LibraryDesk.sln
+dotnet test LibraryDesk.sln --no-build
+dotnet run --project LibraryDesk.App/LibraryDesk.App.csproj --no-build
+```
+
 ## Автор
 Гордєєв Дмитро, група ІПЗ (Варіант № 2)

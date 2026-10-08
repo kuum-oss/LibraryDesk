@@ -1,0 +1,9 @@
+Команда: dotnet build LibraryDesk.sln
+
+LibraryDesk.Core -> LibraryDesk.Core/bin/Debug/net8.0/LibraryDesk.Core.dll
+LibraryDesk.App -> LibraryDesk.App/bin/Debug/net8.0/LibraryDesk.App.dll
+LibraryDesk.Tests -> LibraryDesk.Tests/bin/Debug/net8.0/LibraryDesk.Tests.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)

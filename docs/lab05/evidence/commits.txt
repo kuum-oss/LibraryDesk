@@ -1,0 +1,8 @@
+10927e2 feat(lab5): release audit resources deterministically
+4844e61 feat(lab5): add structured logging and top-level handlers
+a89a3e8 refactor(lab5): replace exception antipatterns
+a503ce1 antipatterns: before
+84909d6 feat(lab5): handle expected input errors with Result
+14be248 refactor(lab5): enforce domain rules with exceptions
+2329ce5 feat(lab5): add input barricade and error types
+d54e221 docs(lab5): classify application errors
