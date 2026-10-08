@@ -8,6 +8,25 @@ public class Reader
     public ReaderKind Kind = ReaderKind.Regular;
     public int DoneCount;
     public DateTime SinceUtc;
+
+    public string Describe()
+    {
+        string description = Name.Trim().ToUpper();
+        if (Kind == ReaderKind.Vip)
+        {
+            description += " [VIP]";
+        }
+
+        if (DoneCount > PricingRules.LoyalLoans)
+        {
+            description += " [ЛОЯЛЬНИЙ]";
+        }
+
+        description += " <" + Email.ToLower() + ">";
+        int years = DateTime.Now.Year - SinceUtc.Year;
+        description += " стаж " + years;
+        return description;
+    }
 }
 
 public class LoanLine
@@ -94,25 +113,6 @@ public class LegacyLoanProcessor
         var discount = _discounts.For(subtotal, readerKind, readerDone);
         var payable = subtotal - discount;
         return payable + _shipping.For(payable);
-    }
-
-    public string DescribeReader(Reader reader)
-    {
-        string description = reader.Name.Trim().ToUpper();
-        if (reader.Kind == ReaderKind.Vip)
-        {
-            description += " [VIP]";
-        }
-
-        if (reader.DoneCount > PricingRules.LoyalLoans)
-        {
-            description += " [ЛОЯЛЬНИЙ]";
-        }
-
-        description += " <" + reader.Email.ToLower() + ">";
-        int years = DateTime.Now.Year - reader.SinceUtc.Year;
-        description += " стаж " + years;
-        return description;
     }
 
     public string DumpLog()

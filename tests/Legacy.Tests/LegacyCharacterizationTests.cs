@@ -109,7 +109,7 @@ public sealed class LegacyCharacterizationTests
         var years = DateTime.Now.Year - 2020;
         var expected = "ІВАН [VIP] [ЛОЯЛЬНИЙ] <ivan@mail.com> стаж " + years;
 
-        var actual = new LegacyLoanProcessor().DescribeReader(reader);
+        var actual = reader.Describe();
 
         Assert.Equal(expected, actual);
     }
