@@ -13,13 +13,13 @@ public sealed class LegacyCharacterizationTests
     }
 
     [Theory]
-    [InlineData(null, "new", "a@b.c", "ERR: null")]
-    [InlineData("empty", "new", "a@b.c", "ERR: empty")]
-    [InlineData("two", "draft", "a@b.c", "ERR: state")]
-    [InlineData("two", "new", "no-mail", "ERR: mail")]
+    [InlineData(null, LoanState.New, "a@b.c", "ERR: null")]
+    [InlineData("empty", LoanState.New, "a@b.c", "ERR: empty")]
+    [InlineData("two", LoanState.Draft, "a@b.c", "ERR: state")]
+    [InlineData("two", LoanState.New, "no-mail", "ERR: mail")]
     public void Handle_BadInput_ReturnsErrorCode(
         string? kindOfItems,
-        string state,
+        LoanState state,
         string mail,
         string expected)
     {
@@ -36,7 +36,7 @@ public sealed class LegacyCharacterizationTests
             7,
             "Іван",
             mail,
-            "regular",
+            ReaderKind.Regular,
             0,
             items,
             state,
@@ -57,10 +57,10 @@ public sealed class LegacyCharacterizationTests
             7,
             "Іван",
             "a@b.c",
-            "vip",
+            ReaderKind.Vip,
             3,
             TwoLines(),
-            "new",
+            LoanState.New,
             "UAH",
             new DateTime(2026, 3, 1),
             false);
@@ -77,11 +77,14 @@ public sealed class LegacyCharacterizationTests
     }
 
     [Theory]
-    [InlineData("regular", 0, 760)]
-    [InlineData("vip", 0, 655)]
-    [InlineData("staff", 0, 550)]
-    [InlineData("regular", 11, 725)]
-    public void Preview_ByReaderKind_ReturnsTotal(string kind, int done, decimal expected)
+    [InlineData(ReaderKind.Regular, 0, 760)]
+    [InlineData(ReaderKind.Vip, 0, 655)]
+    [InlineData(ReaderKind.Staff, 0, 550)]
+    [InlineData(ReaderKind.Regular, 11, 725)]
+    public void Preview_ByReaderKind_ReturnsTotal(
+        ReaderKind kind,
+        int done,
+        decimal expected)
     {
         var sut = new LegacyLoanProcessor();
 
@@ -99,7 +102,7 @@ public sealed class LegacyCharacterizationTests
         };
         var sut = new LegacyLoanProcessor();
 
-        var total = sut.Preview("regular", 0, items);
+        var total = sut.Preview(ReaderKind.Regular, 0, items);
 
         Assert.Equal(1000m, total);
     }
@@ -111,7 +114,7 @@ public sealed class LegacyCharacterizationTests
         {
             Name = " іван ",
             Email = "IVAN@MAIL.COM",
-            Kind = "vip",
+            Kind = ReaderKind.Vip,
             DoneCount = 12,
             SinceUtc = new DateTime(2020, 1, 1),
         };
@@ -133,10 +136,10 @@ public sealed class LegacyCharacterizationTests
             7,
             "Іван",
             "a@b.c",
-            "regular",
+            ReaderKind.Regular,
             0,
             TwoLines(),
-            "paid",
+            LoanState.Paid,
             "UAH",
             new DateTime(2026, 3, 1),
             true);

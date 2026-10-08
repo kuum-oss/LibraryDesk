@@ -5,7 +5,7 @@ public class Reader
     public int Id;
     public string Name = "";
     public string Email = "";
-    public string Kind = "regular";
+    public ReaderKind Kind = ReaderKind.Regular;
     public int DoneCount;
     public DateTime SinceUtc;
 }
@@ -29,10 +29,10 @@ public class LegacyLoanProcessor
         int readerId,
         string readerName,
         string? readerMail,
-        string readerKind,
+        ReaderKind readerKind,
         int readerDone,
         List<LoanLine>? items,
-        string state,
+        LoanState state,
         string currency,
         DateTime createdAt,
         bool sendMail)
@@ -41,7 +41,7 @@ public class LegacyLoanProcessor
         {
             if (items.Count > 0)
             {
-                if (state == "new" || state == "paid")
+                if (state == LoanState.New || state == LoanState.Paid)
                 {
                     if (readerMail != null && readerMail.Contains("@"))
                     {
@@ -74,7 +74,7 @@ public class LegacyLoanProcessor
         }
 
         _tmpDiscount = 0m;
-        if (readerKind == "vip")
+        if (readerKind == ReaderKind.Vip)
         {
             _tmpDiscount = _tmpSum * PricingRules.VipRate;
             if (_tmpDiscount > PricingRules.MaxDiscount)
@@ -82,7 +82,7 @@ public class LegacyLoanProcessor
                 _tmpDiscount = PricingRules.MaxDiscount;
             }
         }
-        else if (readerKind == "staff")
+        else if (readerKind == ReaderKind.Staff)
         {
             _tmpDiscount = _tmpSum * PricingRules.StaffRate;
             if (_tmpDiscount > PricingRules.MaxDiscount)
@@ -125,7 +125,7 @@ public class LegacyLoanProcessor
         return txt;
     }
 
-    public decimal Preview(string readerKind, int readerDone, List<LoanLine> items)
+    public decimal Preview(ReaderKind readerKind, int readerDone, List<LoanLine> items)
     {
         decimal sum = 0m;
         foreach (var item in items)
@@ -134,7 +134,7 @@ public class LegacyLoanProcessor
         }
 
         decimal discount = 0m;
-        if (readerKind == "vip")
+        if (readerKind == ReaderKind.Vip)
         {
             discount = sum * PricingRules.VipRate;
             if (discount > PricingRules.MaxDiscount)
@@ -142,7 +142,7 @@ public class LegacyLoanProcessor
                 discount = PricingRules.MaxDiscount;
             }
         }
-        else if (readerKind == "staff")
+        else if (readerKind == ReaderKind.Staff)
         {
             discount = sum * PricingRules.StaffRate;
             if (discount > PricingRules.MaxDiscount)
@@ -171,7 +171,7 @@ public class LegacyLoanProcessor
     public string DescribeReader(Reader reader)
     {
         string description = reader.Name.Trim().ToUpper();
-        if (reader.Kind == "vip")
+        if (reader.Kind == ReaderKind.Vip)
         {
             description += " [VIP]";
         }
