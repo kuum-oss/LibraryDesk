@@ -1,0 +1,16 @@
+Покриття ЛР 7
+
+Область: LibraryDesk.Core.Pricing.LateFeePolicy і LibraryDesk.Core.Services.LoanService.
+
+До нових тестів:
+Line coverage:   63,15% (60 of 95)
+Branch coverage: 59,09% (13 of 22)
+
+Після нових тестів:
+Line coverage:   98,94% (94 of 95)
+Branch coverage: 81,81% (18 of 22)
+
+LateFeePolicy: line 93,75%, branch 100%.
+LoanService: line 100%, branch 80%.
+
+Фінальний запуск LibraryDesk.Tests: пройдено 35, не пройдено 0.

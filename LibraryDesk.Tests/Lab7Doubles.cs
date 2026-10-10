@@ -35,3 +35,12 @@ internal sealed class StubNotifier : INotifier
     {
     }
 }
+
+internal sealed class ThrowingLoanRepository : ILoanRepository
+{
+    public void Add(Loan loan) => throw new IOException("Сховище недоступне.");
+
+    public Loan? GetById(int id) => null;
+
+    public IReadOnlyList<Loan> GetAll() => Array.Empty<Loan>();
+}
