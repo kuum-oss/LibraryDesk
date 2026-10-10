@@ -127,6 +127,29 @@ public sealed class Loan
         return sum;
     }
 
+    /// <summary>Відновлює перевірений стан формуляра з інфраструктурного знімка.</summary>
+    /// <param name="id">Ідентифікатор формуляра.</param>
+    /// <param name="readerId">Ідентифікатор читача.</param>
+    /// <param name="issuedAt">Дата й час видачі.</param>
+    /// <param name="dueOn">Останній день повернення.</param>
+    /// <param name="status">Збережений стан.</param>
+    /// <param name="items">Збережені позиції.</param>
+    /// <returns>Відновлений формуляр.</returns>
+    internal static Loan Restore(
+        int id,
+        int readerId,
+        DateTimeOffset issuedAt,
+        DateOnly dueOn,
+        LoanStatus status,
+        IEnumerable<LoanItem> items)
+    {
+        ArgumentNullException.ThrowIfNull(items);
+        Loan loan = new(id, readerId, issuedAt, dueOn);
+        loan._items.AddRange(items);
+        loan.Status = status;
+        return loan;
+    }
+
     private void EnsureStatus(LoanStatus required)
     {
         if (Status != required)

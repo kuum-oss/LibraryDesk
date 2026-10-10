@@ -1,7 +1,9 @@
+using LibraryDesk.Core.Abstractions;
+
 namespace LibraryDesk.Core.Pricing;
 
 /// <summary>Обчислює пеню за прострочення повернення книги.</summary>
-public sealed class LateFeePolicy
+public sealed class LateFeePolicy : ILateFeePolicy
 {
     /// <summary>Перший день, з якого діє підвищена ставка.</summary>
     public const int IncreasedRateFromDay = 8;
