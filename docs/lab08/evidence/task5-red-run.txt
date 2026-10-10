@@ -1,0 +1,15 @@
+GitHub Actions CI #2
+URL: https://github.com/kuum-oss/LibraryDesk/actions/runs/38058131893
+Гілка: feature/ci-pipeline
+Коміт: 3c1ef0c
+Статус: Failure
+Загальна тривалість: 40 с
+Завдання Quality gates: 37 с
+
+Текст помилки з анотації GitHub:
+LibraryDesk.Core/Reports/ReportBuilder.cs(17,16): error CS0168:
+The variable 'qualityGateProbe' is declared but never used.
+Process completed with exit code 1.
+
+Причина: TreatWarningsAsErrors перетворив попередження компілятора про
+невикористану локальну змінну на помилку та зупинив Release-збірку.
