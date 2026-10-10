@@ -31,6 +31,7 @@ public sealed class LateFeePolicy
         decimal multiplier = overdueDays >= _increasedRateFromDay
             ? _increasedRateMultiplier
             : 1m;
-        return decimal.Round(overdueDays * dailyFee * multiplier, 2);
+        decimal fee = decimal.Round(overdueDays * dailyFee * multiplier, 2);
+        return Math.Min(fee, bookPrice);
     }
 }
