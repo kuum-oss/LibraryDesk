@@ -2,9 +2,6 @@ name: CI
 
 on:
   push:
-    branches:
-      - main
-      - 'feature/**'
   pull_request:
     branches:
       - main
@@ -35,13 +32,16 @@ jobs:
       - name: Скласти Release з аналізаторами
         run: dotnet build LibraryDesk.sln -c Release --no-restore
 
-      - name: Виконати тести й перевірити покриття
-        run: >-
-          dotnet test LibraryDesk.sln -c Release --no-build --no-restore
-          /p:CollectCoverage=true
-          /p:CoverletOutputFormat=cobertura
-          /p:Threshold=60
-          /p:ThresholdType=line
+      - name: Виконати тести зі збиранням покриття
+        run: |
+          dotnet test tests/Legacy.Tests/LibraryDesk.Legacy.Tests.csproj -c Release --no-build --no-restore
+          dotnet test LibraryDesk.Tests/LibraryDesk.Tests.csproj -c Release --no-build --no-restore \
+            --collect:"XPlat Code Coverage" \
+            --settings docs/sr03/coverlet.runsettings \
+            --results-directory artifacts/sr03-coverage
+
+      - name: Перевірити поріг покриття 70 відсотків
+        run: python3 tools/check_coverage.py artifacts/sr03-coverage 70
 
       - name: Зберегти звіт про покриття
         if: always()
