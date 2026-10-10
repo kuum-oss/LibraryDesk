@@ -5,63 +5,39 @@ namespace LibraryDesk.Tests;
 
 public sealed class LateFeePolicyTests
 {
-    [Fact]
-    public void Calculate_NegativeOverdueDays_ThrowsOutOfRange()
+    [Theory]
+    [InlineData(0, 10, 1000, 0)]
+    [InlineData(1, 10, 1000, 10)]
+    [InlineData(7, 10, 1000, 70)]
+    [InlineData(8, 10, 1000, 120)]
+    [InlineData(10, 10, 1000, 150)]
+    [InlineData(8, 12.5, 1000, 150)]
+    public void Calculate_Boundaries_MatchesTable(
+        int overdueDays,
+        double dailyFee,
+        double bookPrice,
+        double expected)
     {
         LateFeePolicy policy = new();
 
-        Action act = () => policy.Calculate(-1, 10m, 1000m);
+        decimal actual = policy.Calculate(
+            overdueDays,
+            (decimal)dailyFee,
+            (decimal)bookPrice);
 
-        Assert.Throws<ArgumentOutOfRangeException>(act);
+        Assert.Equal((decimal)expected, actual);
     }
 
-    [Fact]
-    public void Calculate_ZeroOverdueDays_ReturnsZero()
+    [Theory]
+    [InlineData(-1)]
+    [InlineData(-30)]
+    public void Calculate_NegativeOverdueDays_ThrowsOutOfRange(int overdueDays)
     {
         LateFeePolicy policy = new();
 
-        decimal actual = policy.Calculate(0, 10m, 1000m);
+        ArgumentOutOfRangeException exception = Assert.Throws<ArgumentOutOfRangeException>(
+            () => policy.Calculate(overdueDays, 10m, 1000m));
 
-        Assert.Equal(0m, actual);
-    }
-
-    [Fact]
-    public void Calculate_OneOverdueDay_UsesStandardRate()
-    {
-        LateFeePolicy policy = new();
-
-        decimal actual = policy.Calculate(1, 10m, 1000m);
-
-        Assert.Equal(10m, actual);
-    }
-
-    [Fact]
-    public void Calculate_SevenOverdueDays_UsesStandardRate()
-    {
-        LateFeePolicy policy = new();
-
-        decimal actual = policy.Calculate(7, 10m, 1000m);
-
-        Assert.Equal(70m, actual);
-    }
-
-    [Fact]
-    public void Calculate_EightOverdueDays_UsesIncreasedRate()
-    {
-        LateFeePolicy policy = new();
-
-        decimal actual = policy.Calculate(8, 10m, 1000m);
-
-        Assert.Equal(120m, actual);
-    }
-
-    [Fact]
-    public void Calculate_TenOverdueDays_UsesIncreasedRate()
-    {
-        LateFeePolicy policy = new();
-
-        decimal actual = policy.Calculate(10, 10m, 1000m);
-
-        Assert.Equal(150m, actual);
+        Assert.Equal("overdueDays", exception.ParamName);
     }
 }
