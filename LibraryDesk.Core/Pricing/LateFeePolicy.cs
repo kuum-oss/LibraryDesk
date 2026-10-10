@@ -19,19 +19,23 @@ public sealed class LateFeePolicy
     /// <returns>Сума пені, округлена до копійок.</returns>
     public decimal Calculate(int overdueDays, decimal dailyFee, decimal bookPrice)
     {
+        EnsureArgumentsValid(overdueDays, dailyFee, bookPrice);
+        decimal rawFee = overdueDays * dailyFee * MultiplierFor(overdueDays);
+        return Math.Min(decimal.Round(rawFee, 2), bookPrice);
+    }
+
+    private static void EnsureArgumentsValid(
+        int overdueDays,
+        decimal dailyFee,
+        decimal bookPrice)
+    {
         ArgumentOutOfRangeException.ThrowIfNegative(overdueDays);
         ArgumentOutOfRangeException.ThrowIfNegative(dailyFee);
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bookPrice);
+    }
 
-        if (overdueDays == 0)
-        {
-            return 0m;
-        }
-
-        decimal multiplier = overdueDays >= _increasedRateFromDay
+    private decimal MultiplierFor(int overdueDays)
+        => overdueDays >= _increasedRateFromDay
             ? _increasedRateMultiplier
             : 1m;
-        decimal fee = decimal.Round(overdueDays * dailyFee * multiplier, 2);
-        return Math.Min(fee, bookPrice);
-    }
 }

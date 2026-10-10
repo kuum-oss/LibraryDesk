@@ -12,6 +12,7 @@ public sealed class LateFeePolicyTests
     [InlineData(8, 10, 1000, 120)]
     [InlineData(10, 10, 1000, 150)]
     [InlineData(8, 12.5, 1000, 150)]
+    [InlineData(20, 10, 300, 300)]
     public void Calculate_Boundaries_MatchesTable(
         int overdueDays,
         double dailyFee,
