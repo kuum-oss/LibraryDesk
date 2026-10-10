@@ -1,0 +1,12 @@
+Експеримент із навмисною помилкою межі
+
+Зміна: overdueDays >= _increasedRateFromDay замінено на overdueDays > _increasedRateFromDay.
+Команда: dotnet test LibraryDesk.Tests/LibraryDesk.Tests.csproj --filter FullyQualifiedName~Calculate_EightOverdueDays --no-restore
+
+[FAIL] LibraryDesk.Tests.LateFeePolicyTests.Calculate_EightOverdueDays_UsesIncreasedRate
+Assert.Equal() Failure: Values differ
+Expected: 120
+Actual:   80
+
+Не пройдено: 1, пройдено: 0, пропущено: 0, всього: 1.
+Після експерименту правильну умову >= відновлено.
