@@ -1,0 +1,16 @@
+Перевірка секретів у відстежуваному коді:
+
+git grep -n -i -E "password|apikey|secret|token" -- "*.cs" "*.csproj" "*.json" "*.yml" "*.yaml"
+Результат: збігів немає.
+
+git log -p -S "ApiKey" --oneline --all
+Результат: збігів в історії немає.
+
+Аудит залежностей:
+
+dotnet list LibraryDesk.sln package --vulnerable --include-transitive
+Результат: жоден із п'яти проєктів не містить відомих уразливих пакетів.
+
+dotnet list LibraryDesk.sln package --outdated
+Результат: доступні планові оновлення інструментів і Microsoft.Extensions,
+але відомих уразливостей у поточних сумісних версіях не виявлено.

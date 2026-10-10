@@ -4,6 +4,7 @@ using LibraryDesk.Core;
 using LibraryDesk.Core.Abstractions;
 using LibraryDesk.Core.Domain;
 using LibraryDesk.Core.Errors;
+using LibraryDesk.Core.Parsing;
 using LibraryDesk.Core.Pricing;
 using LibraryDesk.Core.Reports;
 using LibraryDesk.Core.Services;
@@ -51,17 +52,19 @@ static void RunApplication(ILoggerFactory loggerFactory)
     DateTimeOffset issuedAt = new(2026, 10, 8, 10, 0, 0, TimeSpan.FromHours(3));
     Loan loan = new(1001, reader.Id, issuedAt, new DateOnly(2026, 10, 22));
     LoanItem? parsedItem = null;
-    foreach (string daysInput in new[] { "два", "2" })
+    foreach (string rawInput in new[]
     {
-        Result<LoanItem> parsed = LoanItemParser.Parse(book.Isbn, daysInput, "250");
-        if (!parsed.IsSuccess)
+        $"{book.Isbn};два;250",
+        $"{book.Isbn};2;250",
+    })
+    {
+        if (!LoanItemParser.TryParse(rawInput, out parsedItem))
         {
-            Console.WriteLine($"Помилка вводу: {parsed.Error}");
+            Console.WriteLine("Помилка вводу: очікується ISBN;дні;денний тариф.");
             Console.WriteLine("Повторіть введення.");
             continue;
         }
 
-        parsedItem = parsed.Value;
         break;
     }
 

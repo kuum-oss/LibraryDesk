@@ -12,6 +12,7 @@
     <VersionPrefix>0.8.0</VersionPrefix>
     <Authors>Гордєєв Дмитро</Authors>
     <Product>LibraryDesk</Product>
-    <NuGetAudit>false</NuGetAudit>
+    <NuGetAudit>true</NuGetAudit>
+    <NuGetAuditMode>all</NuGetAuditMode>
   </PropertyGroup>
 </Project>
