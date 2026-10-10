@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text;
 
 namespace LibraryDesk.Legacy;
@@ -27,11 +28,13 @@ public sealed class ReportBuilder
     private static string Line(LoanLine item, string currency)
     {
         return item.Code + " x" + item.Qty + " = "
-            + (item.Qty * item.Price).ToString("0.00") + " " + currency + "\n";
+            + (item.Qty * item.Price).ToString("0.00", CultureInfo.InvariantCulture)
+            + " " + currency + "\n";
     }
 
     private static string Money(string label, decimal value, string currency)
     {
-        return label + ": " + value.ToString("0.00") + " " + currency + "\n";
+        return label + ": " + value.ToString("0.00", CultureInfo.InvariantCulture)
+            + " " + currency + "\n";
     }
 }

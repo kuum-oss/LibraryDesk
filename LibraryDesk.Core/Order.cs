@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace LibraryDesk.Core;
 
@@ -91,8 +92,8 @@ public class Order
     {
         string[] line = new string[3];
         line[0] = sku;
-        line[1] = quantity.ToString();
-        line[2] = unitPrice.ToString();
+        line[1] = quantity.ToString(CultureInfo.InvariantCulture);
+        line[2] = unitPrice.ToString(CultureInfo.InvariantCulture);
         _lines.Add(line);
     }
 
@@ -108,8 +109,8 @@ public class Order
 
         for (int i = 0; i < _lines.Count; i++)
         {
-            int quantity = int.Parse(_lines[i][1]);
-            decimal unitPrice = decimal.Parse(_lines[i][2]);
+            int quantity = int.Parse(_lines[i][1], CultureInfo.InvariantCulture);
+            decimal unitPrice = decimal.Parse(_lines[i][2], CultureInfo.InvariantCulture);
             total += quantity * unitPrice;
             lineCount++;
         }
@@ -201,7 +202,8 @@ public class Order
                 + "; кількість: " + _lines[i][1]
                 + "; ціна: " + _lines[i][2]
                 + "; сума: "
-                + (int.Parse(_lines[i][1]) * decimal.Parse(_lines[i][2]))
+                + (int.Parse(_lines[i][1], CultureInfo.InvariantCulture)
+                    * decimal.Parse(_lines[i][2], CultureInfo.InvariantCulture))
                 + "\n";
         }
 
