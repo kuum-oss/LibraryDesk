@@ -1,5 +1,6 @@
 using System.Text;
 using LibraryDesk.App;
+using LibraryDesk.Core;
 using LibraryDesk.Core.Abstractions;
 using LibraryDesk.Core.Domain;
 using LibraryDesk.Core.Errors;
@@ -10,6 +11,7 @@ using LibraryDesk.Core.Storage;
 using Microsoft.Extensions.Logging;
 
 Console.OutputEncoding = Encoding.UTF8;
+Console.WriteLine($"LibraryDesk v{VersionInfo.Current()}");
 using ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
 {
     builder.AddSimpleConsole(options =>
