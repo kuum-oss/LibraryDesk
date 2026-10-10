@@ -16,6 +16,7 @@ jobs:
   quality:
     name: Quality gates
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Отримати код
         uses: actions/checkout@v4

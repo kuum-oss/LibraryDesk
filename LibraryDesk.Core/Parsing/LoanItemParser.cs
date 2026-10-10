@@ -24,8 +24,13 @@ public static class LoanItemParser
         }
 
         string[] parts = raw.Split(';');
+        if (parts.Length != 3)
+        {
+            return false;
+        }
+
         string isbn = parts[0].Trim();
-        if (parts.Length != 3 || isbn.Length is < MinIsbnLength or > MaxIsbnLength)
+        if (isbn.Length is < MinIsbnLength or > MaxIsbnLength)
         {
             return false;
         }

@@ -35,7 +35,9 @@
    ```
 
 ## Стандарт кодування та статичний аналіз
-Правила розробки детально викладено у файлі [`CODING_STANDARD.md`](file:///Users/dimagordeev/Desktop/untitled%20folder/Console/CODING_STANDARD.md) та машинно закріплено у [`.editorconfig`](file:///Users/dimagordeev/Desktop/untitled%20folder/Console/.editorconfig), [`Directory.Build.props`](file:///Users/dimagordeev/Desktop/untitled%20folder/Console/Directory.Build.props) і правилах **StyleCop.Analyzers**.
+Правила розробки детально викладено у файлі [`CODING_STANDARD.md`](CODING_STANDARD.md)
+та машинно закріплено у [`.editorconfig`](.editorconfig),
+[`Directory.Build.props`](Directory.Build.props) і правилах **StyleCop.Analyzers**.
 
 - **Перевірка форматування:**
   ```bash
