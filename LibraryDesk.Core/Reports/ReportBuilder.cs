@@ -14,7 +14,6 @@ public sealed class ReportBuilder
     public string Build(IReadOnlyList<string> rows)
     {
         ArgumentNullException.ThrowIfNull(rows);
-        string diagnosticNote;
         StringBuilder text = new();
         text.AppendLine(Title.ToUpperInvariant());
         foreach (string row in rows)
