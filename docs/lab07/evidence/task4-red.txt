@@ -1,0 +1,12 @@
+TDD фаза червоний
+
+Вимога: пеня не може перевищувати вартість книги.
+Команда: dotnet test LibraryDesk.Tests/LibraryDesk.Tests.csproj --filter FullyQualifiedName~Calculate_FeeAboveBookPrice --no-restore
+
+[FAIL] LibraryDesk.Tests.LateFeePolicyTests.Calculate_FeeAboveBookPrice_IsCappedAtBookPrice
+Assert.Equal() Failure: Values differ
+Expected: 200
+Actual:   450,0
+
+Не пройдено: 1, пройдено: 0, пропущено: 0, всього: 1.
+Тест упав саме через відсутність обмеження пені вартістю книги.

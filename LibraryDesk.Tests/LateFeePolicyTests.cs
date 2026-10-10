@@ -40,4 +40,14 @@ public sealed class LateFeePolicyTests
 
         Assert.Equal("overdueDays", exception.ParamName);
     }
+
+    [Fact]
+    public void Calculate_FeeAboveBookPrice_IsCappedAtBookPrice()
+    {
+        LateFeePolicy policy = new();
+
+        decimal actual = policy.Calculate(30, 10m, 200m);
+
+        Assert.Equal(200m, actual);
+    }
 }
