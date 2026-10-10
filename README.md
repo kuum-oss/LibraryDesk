@@ -1,5 +1,7 @@
 # LibraryDesk
 
+[![CI](https://github.com/kuum-oss/LibraryDesk/actions/workflows/ci.yml/badge.svg)](https://github.com/kuum-oss/LibraryDesk/actions/workflows/ci.yml)
+
 Навчальний проєкт з дисципліни «Конструювання програмного забезпечення».  
 **Варіант № 2**: облік видачі книг у бібліотеці.
 
