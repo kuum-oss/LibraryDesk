@@ -364,14 +364,14 @@ def build_report():
         doc,
         "Роботу виконано в гілці feature/ci-pipeline. Каталоги bin, obj, .vs та .idea не відстежуються; кожна логічна зміна оформлена окремим повідомленням Conventional Commits. Після завершення гілку синхронізовано з main.",
     )
-    git_log = """b868232 docs(ci): зафіксовано червоний і зелений запуски
+    git_log = """bba1376 docs(report): додано звіт до лабораторної роботи 8
+b868232 docs(ci): зафіксовано червоний і зелений запуски
 f07e57e fix(ci): відновлено зелену збірку після перевірки
 3c1ef0c test(ci): повторно зламано збірку для червоного запуску
 b795a36 chore(review): виправлено зауваження самоогляду перед PR
 a4f7626 feat(security): валідовано ввід і ввімкнено аудит NuGet
 a405b9a fix(ci): усунено навмисне порушення складання
-4538c0a test(ci): навмисне порушення для перевірки конвеєра
-84978ab docs: додано бейдж стану конвеєра CI"""
+4538c0a test(ci): навмисне порушення для перевірки конвеєра"""
     add_listing(doc, "Лістинг 1  Вивід git log --oneline -n 8", git_log, 8.4)
     add_table(
         doc,
@@ -610,11 +610,11 @@ dotnet list LibraryDesk.sln package --vulnerable --include-transitive
         [3.35, 3.45],
         8.5,
     )
-    add_image(doc, EVIDENCE / "pr-status.png", "Знімок екрана 3  Для feature/ci-pipeline pull request відсутній", 6.25)
+    add_image(doc, EVIDENCE / "pr-created.png", "Знімок екрана 3  Pull request 1 із заповненим самооглядом", 6.15)
     add_body(
         doc,
-        "Фактичне відхилення від методички: гілку перенесено в main прямим злиттям локальної історії та push, тому закритого pull request немає. Шаблон PR із заповненим чеклістом створено, але вимога про зелений запуск саме на PR і знімок закритого PR не виконана. На GitHub пошук показує 0 відкритих і 0 закритих PR для цієї гілки.",
-        "Фактичне відхилення від методички:",
+        "Pull request № 1 створено з гілки feature/ci-pipeline до main. Він містить один коміт bba1376, п'ять змінених файлів і 663 додані рядки. Опис охоплює виконані зміни та команди перевірки; усі сім пунктів самоогляду позначено як виконані. GitHub показує 2 із 2 успішних перевірок. На момент фіксації звіту PR відкритий і готовий до злиття.",
+        "Pull request № 1 створено",
     )
 
     # Page 12: analysis and conclusions.
@@ -626,7 +626,7 @@ dotnet list LibraryDesk.sln package --vulnerable --include-transitive
     )
     add_body(
         doc,
-        "Найсильніша частина роботи — відтворюваний CI з порогом покриття та артефактом cobertura. Єдине суттєве організаційне відхилення — відсутність pull request. Воно не впливає на якість коду й виконання CI, але не дозволяє підтвердити формальний етап рецензування через інтерфейс GitHub.",
+        "Найсильніша частина роботи — відтворюваний CI з порогом покриття та артефактом cobertura. Формальний етап рецензування також підтверджено через pull request № 1: опис і чекліст заповнено, а дві серверні перевірки завершилися успішно. Для повного завершення вимоги залишається злити відкритий PR у main.",
     )
     add_heading(doc, "11 Висновки")
     conclusions = [
@@ -635,7 +635,7 @@ dotnet list LibraryDesk.sln package --vulnerable --include-transitive
         "3. Конвеєр GitHub Actions контролює restore, формат, складання, 66 тестів і покриття рядків не менше 60 %.",
         "4. Червоний CI 2 довів роботу TreatWarningsAsErrors, а зелений CI 3 підтвердив виправлення окремим комітом.",
         "5. Зовнішній ввід перевіряється на межі модуля, секретів не знайдено, відомих уразливих пакетів немає.",
-        "6. Самоогляд виконано й зауваження виправлено, але формальний pull request не створювався; це треба врахувати під час здачі.",
+        "6. Pull request № 1 містить заповнений самоогляд і 2 із 2 зелених перевірок; на момент підготовки звіту він готовий до злиття.",
     ]
     for text in conclusions:
         p = doc.add_paragraph()
@@ -648,7 +648,8 @@ dotnet list LibraryDesk.sln package --vulnerable --include-transitive
     add_body(doc, "Репозиторій: https://github.com/kuum-oss/LibraryDesk")
     add_body(doc, "Червоний запуск: https://github.com/kuum-oss/LibraryDesk/actions/runs/38058131893")
     add_body(doc, "Зелений запуск: https://github.com/kuum-oss/LibraryDesk/actions/runs/38058340793")
-    add_body(doc, "Гілка: feature/ci-pipeline; фінальний коміт: b868232.")
+    add_body(doc, "Pull request: https://github.com/kuum-oss/LibraryDesk/pull/1")
+    add_body(doc, "Гілка: feature/ci-pipeline; фінальний коміт: bba1376.")
 
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     doc.core_properties.title = "Звіт до лабораторної роботи 8 LibraryDesk"
