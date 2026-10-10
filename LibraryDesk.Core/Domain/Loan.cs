@@ -127,6 +127,19 @@ public sealed class Loan
         return sum;
     }
 
+    /// <summary>Відновлює перевірений стан формуляра з інфраструктурного знімка.</summary>
+    /// <param name="data">Перевірений знімок із зовнішнього сховища.</param>
+    /// <returns>Відновлений формуляр.</returns>
+    internal static Loan Restore(LoanRestoreData data)
+    {
+        ArgumentNullException.ThrowIfNull(data);
+        ArgumentNullException.ThrowIfNull(data.Items);
+        Loan loan = new(data.Id, data.ReaderId, data.IssuedAt, data.DueOn);
+        loan._items.AddRange(data.Items);
+        loan.Status = data.Status;
+        return loan;
+    }
+
     private void EnsureStatus(LoanStatus required)
     {
         if (Status != required)
