@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - 'feature/**'
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    name: Quality gates
+    runs-on: ubuntu-latest
+    steps:
+      - name: Отримати код
+        uses: actions/checkout@v4
+
+      - name: Установити .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Відновити залежності
+        run: dotnet restore LibraryDesk.sln
+
+      - name: Перевірити форматування
+        run: dotnet format LibraryDesk.sln --verify-no-changes --no-restore
+
+      - name: Скласти Release з аналізаторами
+        run: dotnet build LibraryDesk.sln -c Release --no-restore
+
+      - name: Виконати тести й перевірити покриття
+        run: >-
+          dotnet test LibraryDesk.sln -c Release --no-build --no-restore
+          /p:CollectCoverage=true
+          /p:CoverletOutputFormat=cobertura
+          /p:Threshold=60
+          /p:ThresholdType=line
+
+      - name: Зберегти звіт про покриття
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: '**/coverage.cobertura.xml'
+          if-no-files-found: warn
