@@ -139,8 +139,9 @@ public sealed class LibraryService
 
         int overdueDays = LoanTermsPolicy.OverdueDays(loan!.DueOn, request.ReturnedOn);
         decimal fee = CalculateFee(loan, overdueDays);
-        ReturnCopies(loan);
+        EnsureBooksExist(loan);
         loan.Return();
+        ReturnCopies(loan);
         Save(ReturnBookScenario);
         ReturnBookResult result = new(loan.Id, overdueDays, fee);
         return Success(ReturnBookScenario, result, $"Формуляр {loan.Id} повернуто.");
@@ -285,13 +286,19 @@ public sealed class LibraryService
     {
         foreach (LoanItem item in loan.Items)
         {
-            Book? book = _repository.FindBook(item.Isbn);
-            if (book is null)
+            Book book = _repository.FindBook(item.Isbn)!;
+            book.ReturnCopy();
+        }
+    }
+
+    private void EnsureBooksExist(Loan loan)
+    {
+        foreach (LoanItem item in loan.Items)
+        {
+            if (_repository.FindBook(item.Isbn) is null)
             {
                 throw new InvalidDataException($"Книгу {item.Isbn} з формуляра {loan.Id} не знайдено.");
             }
-
-            book.ReturnCopy();
         }
     }
 
