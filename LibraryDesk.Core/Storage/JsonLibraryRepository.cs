@@ -233,7 +233,16 @@ public sealed class JsonLibraryRepository : ILibraryRepository
             };
 
         public Loan ToDomain()
-            => Loan.Restore(Id, ReaderId, IssuedAt, DueOn, Status, Items.Select(item => item.ToDomain()));
+            => Loan.Restore(
+                new LoanRestoreData
+                {
+                    Id = Id,
+                    ReaderId = ReaderId,
+                    IssuedAt = IssuedAt,
+                    DueOn = DueOn,
+                    Status = Status,
+                    Items = Items.Select(item => item.ToDomain()),
+                });
     }
 
     private sealed record LoanItemData

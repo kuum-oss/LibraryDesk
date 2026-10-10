@@ -104,37 +104,10 @@ public class Order
     /// <returns>Підсумкова сума, заокруглена до двох знаків.</returns>
     public decimal CalculateTotal(bool isRegularCustomer)
     {
-        decimal total = 0;
-        int lineCount = 0;
-
-        for (int i = 0; i < _lines.Count; i++)
-        {
-            int quantity = int.Parse(_lines[i][1], CultureInfo.InvariantCulture);
-            decimal unitPrice = decimal.Parse(_lines[i][2], CultureInfo.InvariantCulture);
-            total += quantity * unitPrice;
-            lineCount++;
-        }
-
-        if (isRegularCustomer && total > RegularDiscountThreshold)
-        {
-            total *= 1m - RegularDiscountRate;
-        }
-        else if (total > LargeOrderThreshold)
-        {
-            total *= 1m - LargeOrderDiscountRate;
-        }
-
-        if (lineCount > BulkLineCount)
-        {
-            total -= BulkDiscountAmount;
-        }
-
-        if (total < 0)
-        {
-            total = 0;
-        }
-
-        // ПДВ нараховується на суму вже після всіх знижок
+        decimal total = Subtotal();
+        total = ApplyPercentageDiscount(total, isRegularCustomer);
+        total -= _lines.Count > BulkLineCount ? BulkDiscountAmount : 0m;
+        total = Math.Max(total, 0m);
         total += total * VatRate;
         return Math.Round(total, 2);
     }
@@ -228,5 +201,28 @@ public class Order
         }
 
         return null;
+    }
+
+    private decimal Subtotal()
+    {
+        decimal total = 0m;
+        foreach (string[] line in _lines)
+        {
+            int quantity = int.Parse(line[1], CultureInfo.InvariantCulture);
+            decimal unitPrice = decimal.Parse(line[2], CultureInfo.InvariantCulture);
+            total += quantity * unitPrice;
+        }
+
+        return total;
+    }
+
+    private static decimal ApplyPercentageDiscount(decimal total, bool isRegularCustomer)
+    {
+        if (isRegularCustomer && total > RegularDiscountThreshold)
+        {
+            return total * (1m - RegularDiscountRate);
+        }
+
+        return total > LargeOrderThreshold ? total * (1m - LargeOrderDiscountRate) : total;
     }
 }

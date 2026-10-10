@@ -128,25 +128,15 @@ public sealed class Loan
     }
 
     /// <summary>Відновлює перевірений стан формуляра з інфраструктурного знімка.</summary>
-    /// <param name="id">Ідентифікатор формуляра.</param>
-    /// <param name="readerId">Ідентифікатор читача.</param>
-    /// <param name="issuedAt">Дата й час видачі.</param>
-    /// <param name="dueOn">Останній день повернення.</param>
-    /// <param name="status">Збережений стан.</param>
-    /// <param name="items">Збережені позиції.</param>
+    /// <param name="data">Перевірений знімок із зовнішнього сховища.</param>
     /// <returns>Відновлений формуляр.</returns>
-    internal static Loan Restore(
-        int id,
-        int readerId,
-        DateTimeOffset issuedAt,
-        DateOnly dueOn,
-        LoanStatus status,
-        IEnumerable<LoanItem> items)
+    internal static Loan Restore(LoanRestoreData data)
     {
-        ArgumentNullException.ThrowIfNull(items);
-        Loan loan = new(id, readerId, issuedAt, dueOn);
-        loan._items.AddRange(items);
-        loan.Status = status;
+        ArgumentNullException.ThrowIfNull(data);
+        ArgumentNullException.ThrowIfNull(data.Items);
+        Loan loan = new(data.Id, data.ReaderId, data.IssuedAt, data.DueOn);
+        loan._items.AddRange(data.Items);
+        loan.Status = data.Status;
         return loan;
     }
 
